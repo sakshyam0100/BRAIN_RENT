@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from QUESTIONER.api.v1.views import questioner_list
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('QUESTIONER',questioner_list,name='Questioner')
 ]
