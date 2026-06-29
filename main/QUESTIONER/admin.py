@@ -1,7 +1,4 @@
 from django.contrib import admin
-from QUESTIONER.models import Questioner
+from .models import QuestionerProfile
 # Register your models here.
-@admin.register(Questioner)
-class Questioneradmin(admin.ModelAdmin):
-    list_display = ['name','email']
-    search_fields =['name','phone']
+admin.site.register(QuestionerProfile)
