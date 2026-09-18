@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Answer | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<section class="submit-answer">
+
+    <h1>Submit Answer</h1>
+
+    <h2>{{ question.title }}</h2>
+
+    <p>
+        <strong>Question:</strong>
+    </p>
+
+    <p>
+        {{ question.description }}
+    </p>
+
+    <hr>
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit">
+            Submit Answer
+        </button>
+
+    </form>
+
+</section>
+
+{% endblock %}

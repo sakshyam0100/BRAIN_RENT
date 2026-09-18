@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Question Details | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<section>
+
+    <h1>{{ assignment.question.title }}</h1>
+
+    <p>
+        <strong>Category:</strong>
+        {{ assignment.question.category.name }}
+    </p>
+
+    <p>
+        <strong>Questioner:</strong>
+        {{ assignment.question.questioner.username }}
+    </p>
+
+    <p>
+        <strong>Status:</strong>
+        {{ assignment.question.get_status_display }}
+    </p>
+
+    <h3>Description</h3>
+
+    <p>{{ assignment.question.description }}</p>
+
+    <hr>
+
+    {% if assignment.question.status != "completed" and not has_answer %}
+
+        <a href="{% url 'submit_answer' assignment.question.id %}">
+            <button type="button">
+                Submit Official Answer
+            </button>
+        </a>
+
+    {% endif %}
+
+    <a href="{% url 'conversation_detail' assignment.question.id %}">
+        <button type="button">
+            Open Chat
+        </button>
+    </a>
+
+</section>
+
+{% endblock %}

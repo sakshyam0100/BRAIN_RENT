@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 
+
 class Category(models.Model):
     name = models.CharField(
         max_length=100,
@@ -41,7 +42,9 @@ class Question(models.Model):
         related_name="questions"
     )
 
-    title = models.CharField(max_length=200)
+    title = models.CharField(
+        max_length=200
+    )
 
     description = models.TextField()
 
@@ -51,7 +54,9 @@ class Question(models.Model):
         default="pending"
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
 
     def __str__(self):
         return self.title
@@ -73,10 +78,10 @@ class QuestionAssignment(models.Model):
     )
 
     advisor = models.ForeignKey(
-    "advisor.AdvisorProfile",
-    on_delete=models.CASCADE,
-    related_name="assignments"
- )
+        "advisor.AdvisorProfile",
+        on_delete=models.CASCADE,
+        related_name="assignments"
+    )
 
     status = models.CharField(
         max_length=20,
@@ -93,3 +98,31 @@ class QuestionAssignment(models.Model):
 
     def __str__(self):
         return f"{self.question.title} -> {self.advisor.user.username}"
+
+
+class Answer(models.Model):
+
+    question = models.OneToOneField(
+        Question,
+        on_delete=models.CASCADE,
+        related_name="answer"
+    )
+
+    advisor = models.ForeignKey(
+        "advisor.AdvisorProfile",
+        on_delete=models.CASCADE,
+        related_name="answers"
+    )
+
+    content = models.TextField()
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    def __str__(self):
+        return f"Answer for {self.question.title}"

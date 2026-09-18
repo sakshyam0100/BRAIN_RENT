@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Home | BRAIN-RENT
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Welcome to BRAIN-RENT</h1>
+        <p>Connect with verified experts and get answers to your questions.</p>
+
+        <a href="#" class="btn-primary">Get Started</a>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,106 @@
+/* ==========================
+   Register Choice
+========================== */
+
+.register-choice {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+    background: #f8f9fa;
+}
+
+.register-choice__container {
+    width: 100%;
+    max-width: 1100px;
+}
+
+.register-choice__header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.register-choice__header h1 {
+    font-size: 2.5rem;
+    color: #111827;
+    margin-bottom: 10px;
+}
+
+.register-choice__header p {
+    color: #6b7280;
+    font-size: 1rem;
+}
+
+.register-choice__cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.choice-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 40px 30px;
+    text-align: center;
+    transition: 0.25s ease;
+}
+
+.choice-card:hover {
+    border-color: #2563eb;
+}
+
+.choice-card__icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.choice-card h2 {
+    margin-bottom: 15px;
+    color: #111827;
+}
+
+.choice-card p {
+    color: #6b7280;
+    line-height: 1.7;
+    margin-bottom: 30px;
+}
+
+.choice-card__button {
+    display: inline-block;
+    text-decoration: none;
+    background: #2563eb;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.choice-card__button:hover {
+    background: #1d4ed8;
+}
+
+.register-choice__footer {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.register-choice__footer a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.register-choice__footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+
+    .register-choice__cards {
+        grid-template-columns: 1fr;
+    }
+
+}

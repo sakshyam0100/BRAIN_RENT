@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Questioner Registration | BRAIN-RENT{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/questioner_register.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="register-page">
+
+    <div class="register-container">
+
+        <div class="register-header">
+            <h1>Create Your Advisor Account</h1>
+            <p>Join BRAIN-RENT as an Advisor.</p>
+        </div>
+
+        <form method="POST" class="register-form">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">
+        Create Account
+    </button>
+
+ </form>
+    </div>
+
+</section>
+
+{% endblock %}

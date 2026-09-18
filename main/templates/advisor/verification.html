@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Advisor Verification
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/advisor_verification.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="verification-page">
+
+    <div class="verification-container">
+
+        <h1>Advisor Verification</h1>
+
+        <p>
+            Complete your profile and upload your verification documents.
+        </p>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <h3>Profile Information</h3>
+
+            {{ profile_form.as_p }}
+
+            <h3>Verification Documents</h3>
+
+            {{ verification_form.as_p }}
+
+            <button type="submit">
+                Submit Verification
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/advisor_verification.js' %}"></script>
+{% endblock %}

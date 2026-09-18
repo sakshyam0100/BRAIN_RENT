@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Conversation{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/chat.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="chat-container">
+
+    <div class="chat-header">
+        <h2>{{ conversation.question.title }}</h2>
+    </div>
+
+    <div class="chat-messages" id="chat-messages">
+
+        {% for message in conversation.messages.all %}
+
+            <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+
+                <div class="message-content">
+
+                    <strong>{{ message.sender.username }}</strong>
+
+                    <p>{{ message.content }}</p>
+
+                    <div class="message-time">
+
+                        {{ message.created_at }}
+
+                        {% if message.sender == request.user %}
+
+                            &bull;
+
+                            {% if message.is_read %}
+                                Read
+                            {% else %}
+                                Sent
+                            {% endif %}
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% empty %}
+
+            <p>No messages yet.</p>
+
+        {% endfor %}
+
+    </div>
+
+    <div class="chat-form">
+
+        {% if chat_closed %}
+
+            <p>
+                <strong>
+                    This conversation has been closed because the question has been completed.
+                </strong>
+            </p>
+
+        {% else %}
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                {{ form.as_p }}
+
+                <button type="submit">
+                    Send
+                </button>
+
+            </form>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<script>
+window.onload = function () {
+
+    const chatMessages = document.getElementById("chat-messages");
+
+    if (chatMessages) {
+        chatMessages.scrollTo({
+            top: chatMessages.scrollHeight,
+            behavior: "smooth"
+        });
+    }
+
+};
+</script>
+
+{% endblock %}
