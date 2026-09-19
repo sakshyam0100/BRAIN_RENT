@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+{% load questioner_tags %}
+
+{% block title %}My Profile | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<section class="profile-view">
+
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {% if request.user.profile_picture %}
+                <img src="{{ request.user.profile_picture.url }}" alt="Profile Picture">
+            {% else %}
+                <div class="avatar-placeholder">
+                    {{ request.user.username|first|upper }}
+                </div>
+            {% endif %}
+        </div>
+        <div class="profile-info">
+            <h1>{{ request.user.get_full_name|default:request.user.username }}</h1>
+            <p class="profile-bio">{{ profile.bio|default:"No bio yet. Add one to let others know about you!" }}</p>
+            <div class="profile-meta">
+                {% if profile.location %}
+                    <span class="meta-item">📍 {{ profile.location }}</span>
+                {% endif %}
+                <span class="meta-item">📅 Joined {{ request.user.created_at|date:"F Y" }}</span>
+                <span class="meta-item">❓ {{ total_questions }} Questions</span>
+                <span class="meta-item">✅ {{ completed_questions }} Completed</span>
+            </div>
+        </div>
+        <div class="profile-actions">
+            <a href="{% url 'edit_questioner_profile' %}" class="btn btn-primary">
+                ✏️ Edit Profile
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats-section">
+        <h2>Activity Statistics</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_questions }}</div>
+                <div class="stat-label">Total Questions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ completed_questions }}</div>
+                <div class="stat-label">Completed Consultations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ reviews.count }}</div>
+                <div class="stat-label">Reviews Given</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Areas of Interest -->
+    {% if profile.areas_of_interest %}
+        <div class="interests-section">
+            <h2>Areas of Interest</h2>
+            <div class="interests-tags">
+                {% for interest in profile.areas_of_interest|split:"," %}
+                    <span class="interest-tag">{{ interest }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Social Links -->
+    {% if profile.website or profile.linkedin or profile.github %}
+        <div class="social-section">
+            <h2>Social Links</h2>
+            <div class="social-links">
+                {% if profile.website %}
+                    <a href="{{ profile.website }}" target="_blank" class="social-link">
+                        🌐 Website
+                    </a>
+                {% endif %}
+                {% if profile.linkedin %}
+                    <a href="{{ profile.linkedin }}" target="_blank" class="social-link">
+                        💼 LinkedIn
+                    </a>
+                {% endif %}
+                {% if profile.github %}
+                    <a href="{{ profile.github }}" target="_blank" class="social-link">
+                        💻 GitHub
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Recent Reviews -->
+    <div class="reviews-section">
+        <h2>My Reviews</h2>
+        {% if reviews %}
+            <div class="reviews-list">
+                {% for review in reviews %}
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="review-rating">
+                                {% for i in "12345" %}
+                                    {% if i <= review.rating %}⭐{% else %}☆{% endif %}
+                                {% endfor %}
+                                <span class="rating-number">{{ review.rating }}/5</span>
+                            </div>
+                            <div class="review-date">
+                                {{ review.created_at|date:"M d, Y" }}
+                            </div>
+                        </div>
+                        <div class="review-question">
+                            <strong>Question:</strong> {{ review.question.title }}
+                        </div>
+                        <div class="review-advisor">
+                            <strong>Advisor:</strong> {{ review.advisor.user.get_full_name|default:review.advisor.user.username }}
+                        </div>
+                        {% if review.comment %}
+                            <div class="review-comment">
+                                "{{ review.comment }}"
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>You haven't submitted any reviews yet.</p>
+                <p>Complete consultations to leave reviews for advisors!</p>
+            </div>
+        {% endif %}
+    </div>
+
+</section>
+
+<style>
+.profile-view {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.profile-header {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.profile-avatar {
+    flex-shrink: 0;
+}
+
+.profile-avatar img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #667eea;
+}
+
+.avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #667eea;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: bold;
+    border: 4px solid #667eea;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-info h1 {
+    color: #333;
+    margin: 0 0 10px 0;
+}
+
+.profile-bio {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.profile-meta {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    color: #666;
+    font-size: 14px;
+}
+
+.profile-actions {
+    flex-shrink: 0;
+}
+
+.stats-section,
+.interests-section,
+.social-section,
+.reviews-section {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.stats-section h2,
+.interests-section h2,
+.social-section h2,
+.reviews-section h2 {
+    color: #333;
+    margin: 0 0 20px 0;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.interests-tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.interest-tag {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.social-links {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.social-link {
+    background: #f8f9fa;
+    color: #333;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+.social-link:hover {
+    background: #e9ecef;
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.review-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 6px;
+    border-left: 4px solid #ffc107;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.review-rating {
+    font-size: 24px;
+    color: #ffc107;
+}
+
+.rating-number {
+    font-size: 16px;
+    color: #666;
+    margin-left: 10px;
+}
+
+.review-date {
+    color: #666;
+    font-size: 14px;
+}
+
+.review-question,
+.review-advisor {
+    color: #555;
+    margin: 8px 0;
+}
+
+.review-comment {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 3px solid #ffc107;
+    margin-top: 10px;
+    font-style: italic;
+    color: #666;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.empty-state p {
+    margin: 5px 0;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+}
+
+@media (max-width: 768px) {
+    .profile-view {
+        padding: 10px;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .profile-meta {
+        justify-content: center;
+    }
+    
+    .profile-actions {
+        width: 100%;
+    }
+    
+    .profile-actions .btn {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+{% endblock %}

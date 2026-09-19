@@ -1,0 +1,489 @@
+{% extends "base.html" %}
+
+{% block title %}Question Details | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<section class="question-detail">
+
+    <div class="question-header">
+        <h1>{{ question.title }}</h1>
+        <div class="question-meta">
+            <span class="category-tag">{{ question.category.name }}</span>
+            <span class="status-tag status-{{ question.status }}">{{ question.get_status_display }}</span>
+        </div>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="progress-indicator">
+        <div class="progress-step {% if question.status == 'pending' %}active{% endif %} {% if question.status != 'pending' %}completed{% endif %}">
+            <div class="step-number">1</div>
+            <div class="step-label">Question Asked</div>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-step {% if question.status == 'accepted' %}active{% endif %} {% if question.status == 'completed' %}completed{% endif %} {% if not assignment %}disabled{% endif %}">
+            <div class="step-number">2</div>
+            <div class="step-label">Advisor Assigned</div>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-step {% if question.status == 'completed' %}active{% endif %} {% if not question.answer %}disabled{% endif %}">
+            <div class="step-number">3</div>
+            <div class="step-label">Answer Received</div>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-step {% if has_review %}active{% endif %} {% if not has_review %}disabled{% endif %}">
+            <div class="step-number">4</div>
+            <div class="step-label">Review Submitted</div>
+        </div>
+    </div>
+
+    <div class="question-content">
+        <div class="question-info">
+            <h3>Question Description</h3>
+            <p>{{ question.description }}</p>
+            <p class="created-date">
+                <strong>Created:</strong> {{ question.created_at|date:"F d, Y g:i A" }}
+            </p>
+        </div>
+
+        {% if assignment %}
+            <div class="advisor-info">
+                <h3>Assigned Advisor</h3>
+                <div class="advisor-details">
+                    {% if assignment.advisor.user.profile_picture %}
+                        <img
+                            src="{{ assignment.advisor.user.profile_picture.url }}"
+                            alt="Advisor Profile"
+                            class="advisor-avatar"
+                        >
+                    {% endif %}
+                    <div class="advisor-text">
+                        <p>
+                            <strong>Name:</strong>
+                            {{ assignment.advisor.user.get_full_name|default:assignment.advisor.user.username }}
+                        </p>
+                        <p>
+                            <strong>Bio:</strong><br>
+                            {{ assignment.advisor.bio|default:"No bio available." }}
+                        </p>
+                        <p>
+                            <strong>Experience:</strong> {{ assignment.advisor.experience|default:"Not specified" }} years
+                        </p>
+                        <p>
+                            <strong>Expertise:</strong>
+                            {% for category in assignment.advisor.expertise.all %}
+                                {{ category.name }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                No expertise added.
+                            {% endfor %}
+                        </p>
+                        <p>
+                            <strong>Rating:</strong>
+                            {% if average_rating %}
+                                ⭐ {{ average_rating|floatformat:1 }}/5 ({{ total_reviews }} reviews)
+                            {% else %}
+                                No ratings yet
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <a href="{% url 'advisor_profile_view' assignment.advisor.id %}" class="btn btn-secondary">
+                    View Full Profile
+                </a>
+            </div>
+        {% else %}
+            <div class="no-advisor">
+                <p>⏳ Waiting for an advisor to accept your question.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if question.answer %}
+        <div class="answer-section">
+            <h3>Official Answer</h3>
+            <div class="answer-content">
+                <p>{{ question.answer.content }}</p>
+                <div class="answer-meta">
+                    <p>
+                        <strong>Answered By:</strong> {{ question.answer.advisor.user.username }}
+                    </p>
+                    <p>
+                        <strong>Answered On:</strong> {{ question.answer.created_at|date:"F d, Y g:i A" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="no-answer">
+            <p>📝 No official answer has been submitted yet.</p>
+        </div>
+    {% endif %}
+
+    <div class="action-buttons">
+        {% if assignment %}
+            {% if payment %}
+                {% if payment.status == 'completed' %}
+                    <a href="{% url 'conversation_detail' question.id %}" class="btn btn-primary">
+                        💬 Open Chat
+                    </a>
+                {% else %}
+                    <a href="{% url 'initiate_payment' question.id %}" class="btn btn-success">
+                        💳 Pay Rs. {{ assignment.advisor.consultation_rate|floatformat:2 }} to Chat
+                    </a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'initiate_payment' question.id %}" class="btn btn-success">
+                    💳 Pay Rs. {{ assignment.advisor.consultation_rate|floatformat:2 }} to Chat
+                </a>
+            {% endif %}
+        {% endif %}
+
+        {% if question.status == "completed" and not has_review %}
+            <a href="{% url 'submit_review' question.id %}" class="btn btn-warning">
+                ⭐ Leave a Review
+            </a>
+        {% endif %}
+
+        {% if has_review %}
+            <div class="review-actions">
+                <a href="{% url 'edit_review' question.review.id %}" class="btn btn-warning">
+                    ✏️ Edit Review
+                </a>
+                <a href="{% url 'delete_review' question.review.id %}" class="btn btn-danger">
+                    🗑️ Delete Review
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+</section>
+
+<style>
+.question-detail {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.question-header {
+    margin-bottom: 30px;
+}
+
+.question-header h1 {
+    color: #333;
+    margin: 0 0 15px 0;
+}
+
+.question-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.category-tag {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-tag {
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-accepted {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-completed {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.progress-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 30px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex: 1;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.progress-step.active .step-number {
+    background: #667eea;
+    color: white;
+}
+
+.progress-step.completed .step-number {
+    background: #28a745;
+    color: white;
+}
+
+.progress-step.disabled .step-number {
+    background: #e9ecef;
+    color: #adb5bd;
+}
+
+.step-label {
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: 600;
+}
+
+.progress-step.active .step-label {
+    color: #667eea;
+}
+
+.progress-step.completed .step-label {
+    color: #28a745;
+}
+
+.progress-step.disabled .step-label {
+    color: #adb5bd;
+}
+
+.progress-line {
+    flex: 1;
+    height: 2px;
+    background: #e9ecef;
+    margin: 0 10px;
+}
+
+.question-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.question-info, .advisor-info {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.question-info h3, .advisor-info h3 {
+    color: #333;
+    margin: 0 0 15px 0;
+}
+
+.question-info p {
+    color: #555;
+    line-height: 1.6;
+}
+
+.created-date {
+    color: #666;
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+.advisor-details {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.advisor-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.advisor-text p {
+    margin: 8px 0;
+    color: #555;
+}
+
+.no-advisor {
+    background: #fff3cd;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    color: #856404;
+}
+
+.answer-section {
+    background: #d4edda;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 30px 0;
+}
+
+.answer-section h3 {
+    color: #155724;
+    margin: 0 0 15px 0;
+}
+
+.answer-content {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+}
+
+.answer-content p {
+    color: #333;
+    line-height: 1.6;
+    margin: 0 0 15px 0;
+}
+
+.answer-meta p {
+    color: #666;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.no-answer {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    color: #666;
+    margin: 30px 0;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #218838;
+}
+
+.btn-warning {
+    background: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background: #e0a800;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.review-actions {
+    display: flex;
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    .question-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .progress-indicator {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .progress-line {
+        width: 2px;
+        height: 20px;
+        margin: 10px auto;
+    }
+    
+    .advisor-details {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
+
+{% endblock %}

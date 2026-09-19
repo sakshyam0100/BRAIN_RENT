@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<section class="edit-profile">
+
+    <div class="page-header">
+        <h1>Edit Your Profile</h1>
+        <p>Update your personal information and preferences</p>
+    </div>
+
+    <div class="profile-form-container">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- User Information -->
+            <div class="form-section">
+                <h2>Personal Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ user_form.first_name.id_for_label }}">First Name</label>
+                        {{ user_form.first_name }}
+                        {% if user_form.first_name.errors %}
+                            <div class="error-message">{{ user_form.first_name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ user_form.last_name.id_for_label }}">Last Name</label>
+                        {{ user_form.last_name }}
+                        {% if user_form.last_name.errors %}
+                            <div class="error-message">{{ user_form.last_name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ user_form.email.id_for_label }}">Email</label>
+                        {{ user_form.email }}
+                        {% if user_form.email.errors %}
+                            <div class="error-message">{{ user_form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ user_form.phone_number.id_for_label }}">Phone Number</label>
+                        {{ user_form.phone_number }}
+                        {% if user_form.phone_number.errors %}
+                            <div class="error-message">{{ user_form.phone_number.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Information -->
+            <div class="form-section">
+                <h2>Profile Details</h2>
+                <div class="form-group">
+                    <label for="{{ profile_form.bio.id_for_label }}">Bio</label>
+                    {{ profile_form.bio }}
+                    {% if profile_form.bio.errors %}
+                        <div class="error-message">{{ profile_form.bio.errors }}</div>
+                    {% endif %}
+                    <small class="form-help">Tell us about yourself and your interests</small>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ profile_form.location.id_for_label }}">Location</label>
+                        {{ profile_form.location }}
+                        {% if profile_form.location.errors %}
+                            <div class="error-message">{{ profile_form.location.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ profile_form.areas_of_interest.id_for_label }}">Areas of Interest</label>
+                        {{ profile_form.areas_of_interest }}
+                        {% if profile_form.areas_of_interest.errors %}
+                            <div class="error-message">{{ profile_form.areas_of_interest.errors }}</div>
+                        {% endif %}
+                        <small class="form-help">Comma-separated list (e.g., Technology, Business, Education)</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Links -->
+            <div class="form-section">
+                <h2>Social Links</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ profile_form.website.id_for_label }}">Website</label>
+                        {{ profile_form.website }}
+                        {% if profile_form.website.errors %}
+                            <div class="error-message">{{ profile_form.website.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ profile_form.linkedin.id_for_label }}">LinkedIn</label>
+                        {{ profile_form.linkedin }}
+                        {% if profile_form.linkedin.errors %}
+                            <div class="error-message">{{ profile_form.linkedin.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ profile_form.github.id_for_label }}">GitHub</label>
+                        {{ profile_form.github }}
+                        {% if profile_form.github.errors %}
+                            <div class="error-message">{{ profile_form.github.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="{% url 'questioner_dashboard' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+</section>
+
+<style>
+.edit-profile {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-header {
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    color: #333;
+    margin: 0 0 10px 0;
+}
+
+.page-header p {
+    color: #666;
+    margin: 0;
+}
+
+.profile-form-container {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.form-section h2 {
+    color: #333;
+    margin: 0 0 20px 0;
+    font-size: 18px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-help {
+    display: block;
+    color: #666;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+@media (max-width: 768px) {
+    .edit-profile {
+        padding: 10px;
+    }
+    
+    .profile-form-container {
+        padding: 20px;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
+
+{% endblock %}

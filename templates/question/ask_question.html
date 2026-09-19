@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ask a Question | BRAIN-RENT{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/ask_question.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="ask-question">
+
+    <div class="ask-question__container">
+
+        <h1>Ask a Question</h1>
+
+        <p>
+            Describe your problem clearly so advisors can help you effectively.
+        </p>
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button type="submit">
+                Submit Question
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/ask_question.js' %}"></script>
+{% endblock %}
