@@ -17,4 +17,9 @@ urlpatterns = [
     views.edit_advisor_profile,
     name="edit_advisor_profile",
     ),
+    path(
+        "advisor/profile/<int:advisor_id>/",
+        views.advisor_profile_view,
+        name="advisor_profile_view",
+    ),
 ]

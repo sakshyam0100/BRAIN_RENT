@@ -35,8 +35,13 @@ class Review(models.Model):
         auto_now_add=True
     )
 
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
     def __str__(self):
         return (
             f"{self.advisor.user.username} "
-            f"- {self.rating}★"
+            f"- {self.rating}★ "
+            f"({self.question.title})"
         )

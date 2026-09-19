@@ -139,3 +139,17 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 LOGIN_URL = "login"
+
+# Session Configuration
+SESSION_COOKIE_AGE = 3600  # 1 hour session timeout
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# Khalti Payment Configuration
+# Sandbox/Test Environment
+KHALTI_PUBLIC_KEY = '7579dd4511eb4f37aba6c94f45d3c593'
+KHALTI_SECRET_KEY = '71ff0b77e6c1409787f4c7dfb37b2ec0'
+
+# Payment Mode: 'sandbox' (use Khalti sandbox), 'test' (bypass Khalti), or 'production' (use Khalti live)
+# Note: Currently set to 'test' for development. Change to 'sandbox' when you have valid Khalti sandbox credentials.
+PAYMENT_MODE = 'sandbox'

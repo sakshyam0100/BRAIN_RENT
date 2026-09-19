@@ -30,6 +30,8 @@ urlpatterns = [
     path("", include("question.urls")),
     path("chat/", include("chat.urls")),
     path("", include("review.urls")),
+    path("", include("notification.urls")),
+    path("payment/", include("payment.urls")),
 
 ]
 

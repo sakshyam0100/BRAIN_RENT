@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Question Details | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<section class="question-detail">
+
+    <h1>{{ question.title }}</h1>
+
+    <p>
+        <strong>Category:</strong>
+        {{ question.category.name }}
+    </p>
+
+    <p>
+        <strong>Status:</strong>
+        {{ question.get_status_display }}
+    </p>
+
+    <p>
+        <strong>Description:</strong>
+    </p>
+
+    <p>
+        {{ question.description }}
+    </p>
+
+    <p>
+        <strong>Created:</strong>
+        {{ question.created_at }}
+    </p>
+
+    <hr>
+
+    {% if question.answer %}
+
+        <h2>Official Answer</h2>
+
+        <p>
+            {{ question.answer.content }}
+        </p>
+
+        <p>
+            <strong>Answered By:</strong>
+            {{ question.answer.advisor.user.username }}
+        </p>
+
+        <p>
+            <strong>Answered On:</strong>
+            {{ question.answer.created_at }}
+        </p>
+
+    {% else %}
+
+        <p>
+            <strong>No official answer has been submitted yet.</strong>
+        </p>
+
+    {% endif %}
+
+    <hr>
+
+    {% if question.status == "completed" and not has_review %}
+
+        <a href="{% url 'submit_review' question.id %}">
+            <button type="button">
+                Leave a Review
+            </button>
+        </a>
+
+        <hr>
+
+    {% endif %}
+
+    {% if assignment %}
+
+        <h3>Assigned Advisor</h3>
+
+        {% if assignment.advisor.user.profile_picture %}
+            <img
+                src="{{ assignment.advisor.user.profile_picture.url }}"
+                alt="Advisor Profile"
+                width="120"
+                height="120"
+                style="border-radius:50%; object-fit:cover;"
+            >
+        {% endif %}
+
+        <p>
+            <strong>Name:</strong>
+            {{ assignment.advisor.user.get_full_name|default:assignment.advisor.user.username }}
+        </p>
+
+        <p>
+            <strong>Bio:</strong><br>
+            {{ assignment.advisor.bio|default:"No bio available." }}
+        </p>
+
+        <p>
+            <strong>Experience:</strong>
+            {{ assignment.advisor.experience|default:"Not specified" }}
+        </p>
+
+        <p>
+            <strong>Expertise:</strong>
+
+            {% for category in assignment.advisor.expertise.all %}
+
+                {{ category.name }}{% if not forloop.last %}, {% endif %}
+
+            {% empty %}
+
+                No expertise added.
+
+            {% endfor %}
+
+        </p>
+
+        <p>
+            <strong>Average Rating:</strong>
+
+            {% if average_rating %}
+
+                ⭐ {{ average_rating|floatformat:1 }}/5
+
+            {% else %}
+
+                No ratings yet
+
+            {% endif %}
+
+        </p>
+
+        <p>
+            <strong>Total Reviews:</strong>
+            {{ total_reviews }}
+        </p>
+
+        <p>
+            <strong>Assignment Status:</strong>
+            {{ assignment.get_status_display }}
+        </p>
+
+    {% else %}
+
+        <p>
+            <strong>Advisor:</strong>
+            Waiting for an advisor to accept your question.
+        </p>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

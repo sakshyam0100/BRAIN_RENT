@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Details | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<section class="payment-detail">
+
+    <div class="detail-header">
+        <h1>Payment Details</h1>
+        <a href="{% url 'payment_history' %}" class="btn btn-secondary">
+            ← Back to History
+        </a>
+    </div>
+
+    <div class="payment-summary">
+
+        <div class="summary-card">
+
+            <div class="summary-header">
+                <h2>{{ payment.question.title }}</h2>
+                <span class="status-badge status-{{ payment.status }}">
+                    {{ payment.get_status_display }}
+                </span>
+            </div>
+
+            <div class="summary-body">
+
+                <div class="summary-row">
+                    <strong>Amount:</strong>
+                    <span class="amount">Rs. {{ payment.amount|floatformat:2 }}</span>
+                </div>
+
+                <div class="summary-row">
+                    <strong>Currency:</strong>
+                    {{ payment.currency }}
+                </div>
+
+                <div class="summary-row">
+                    <strong>Payment Method:</strong>
+                    {{ payment.payment_method|title }}
+                </div>
+
+                <div class="summary-row">
+                    <strong>Created:</strong>
+                    {{ payment.created_at|date:"F d, Y g:i A" }}
+                </div>
+
+                {% if payment.completed_at %}
+                    <div class="summary-row">
+                        <strong>Completed:</strong>
+                        {{ payment.completed_at|date:"F d, Y g:i A" }}
+                    </div>
+                {% endif %}
+
+                {% if payment.khalti_txn_id %}
+                    <div class="summary-row">
+                        <strong>Khalti Transaction ID:</strong>
+                        {{ payment.khalti_txn_id }}
+                    </div>
+                {% endif %}
+
+                {% if payment.khalti_idx %}
+                    <div class="summary-row">
+                        <strong>Khalti Payment Index:</strong>
+                        {{ payment.khalti_idx }}
+                    </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <div class="participants-card">
+
+            <h3>Participants</h3>
+
+            <div class="participant">
+                <strong>Questioner:</strong>
+                {{ payment.questioner.username }}
+            </div>
+
+            <div class="participant">
+                <strong>Advisor:</strong>
+                {{ payment.advisor.user.username }}
+            </div>
+
+            <div class="participant">
+                <strong>Question Category:</strong>
+                {{ payment.question.category.name }}
+            </div>
+
+        </div>
+
+    </div>
+
+    {% if payment.status == 'pending' %}
+        <div class="payment-actions">
+            <a href="{% url 'initiate_payment' payment.question.id %}" class="btn btn-primary">
+                Retry Payment
+            </a>
+        </div>
+    {% endif %}
+
+</section>
+
+<style>
+.payment-detail {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.detail-header h1 {
+    color: #333;
+    margin: 0;
+}
+
+.payment-summary {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.summary-card, .participants-card {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.summary-header h2 {
+    color: #333;
+    margin: 0;
+    font-size: 20px;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-failed {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-refunded {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.summary-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+}
+
+.amount {
+    font-weight: bold;
+    color: #28a745;
+    font-size: 18px;
+}
+
+.participants-card h3 {
+    color: #333;
+    margin: 0 0 20px 0;
+}
+
+.participant {
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    color: #555;
+}
+
+.participant:last-child {
+    border-bottom: none;
+}
+
+.payment-actions {
+    text-align: center;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+@media (max-width: 768px) {
+    .detail-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .payment-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-row {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+</style>
+
+{% endblock %}

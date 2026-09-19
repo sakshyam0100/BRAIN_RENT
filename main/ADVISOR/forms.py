@@ -11,6 +11,7 @@ class AdvisorProfileForm(forms.ModelForm):
             "bio",
             "expertise",
             "experience",
+            "consultation_rate",
         ]
 
         widgets = {

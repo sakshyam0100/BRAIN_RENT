@@ -14,13 +14,17 @@
 
     <div class="chat-header">
         <h2>{{ conversation.question.title }}</h2>
+        <div class="chat-status {{ conversation.question.status }}">
+            Status: {{ conversation.question.get_status_display }}
+        </div>
     </div>
 
-    <div class="chat-messages" id="chat-messages">
+    <div class="chat-messages" id="chat-messages" data-question-id="{{ conversation.question.id }}">
 
         {% for message in conversation.messages.all %}
 
-            <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+            <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}" 
+                 data-message-id="{{ message.id }}">
 
                 <div class="message-content">
 
@@ -30,7 +34,7 @@
 
                     <div class="message-time">
 
-                        {{ message.created_at }}
+                        {{ message.created_at|date:"M d, Y g:i A" }}
 
                         {% if message.sender == request.user %}
 
@@ -52,7 +56,9 @@
 
         {% empty %}
 
-            <p>No messages yet.</p>
+            <div class="no-messages">
+                <p>No messages yet. Start the conversation!</p>
+            </div>
 
         {% endfor %}
 
@@ -62,25 +68,26 @@
 
         {% if chat_closed %}
 
-            <p>
-                <strong>
-                    This conversation has been closed because the question has been completed.
-                </strong>
-            </p>
+            <div class="chat-closed-notice">
+                <p>
+                    <strong>
+                        This conversation has been closed because the question has been completed.
+                    </strong>
+                </p>
+            </div>
 
         {% else %}
 
-            <form method="post">
-
-                {% csrf_token %}
-
-                {{ form.as_p }}
-
-                <button type="submit">
+            <div class="message-input-container">
+                <textarea 
+                    id="message-input" 
+                    placeholder="Type your message..." 
+                    rows="3"
+                ></textarea>
+                <button type="button" id="send-button">
                     Send
                 </button>
-
-            </form>
+            </div>
 
         {% endif %}
 
@@ -89,18 +96,148 @@
 </div>
 
 <script>
+const chatMessages = document.getElementById("chat-messages");
+const messageInput = document.getElementById("message-input");
+const sendButton = document.getElementById("send-button");
+const questionId = chatMessages.dataset.questionId;
+const lastMessageElement = chatMessages.querySelector('[data-message-id]');
+let lastMessageId = lastMessageElement ? parseInt(lastMessageElement.dataset.messageId) : 0;
+let refreshInterval;
+
+// Auto-scroll to bottom on page load
 window.onload = function () {
-
-    const chatMessages = document.getElementById("chat-messages");
-
     if (chatMessages) {
-        chatMessages.scrollTo({
-            top: chatMessages.scrollHeight,
-            behavior: "smooth"
-        });
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
-
+    startAutoRefresh();
 };
+
+// Send message via AJAX
+sendButton.addEventListener('click', sendMessage);
+messageInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
+function sendMessage() {
+    const content = messageInput.value.trim();
+    
+    if (!content) return;
+    
+    sendButton.disabled = true;
+    sendButton.textContent = 'Sending...';
+    
+    fetch(`/chat/conversation/${questionId}/send/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify({ content: content })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            messageInput.value = '';
+            appendMessage(data.message);
+            lastMessageId = data.message.id;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        } else {
+            alert(data.error || 'Failed to send message');
+        }
+    })
+    .catch(error => {
+        alert('Failed to send message');
+    })
+    .finally(() => {
+        sendButton.disabled = false;
+        sendButton.textContent = 'Send';
+    });
+}
+
+// Auto-refresh for new messages
+function startAutoRefresh() {
+    refreshInterval = setInterval(() => {
+        fetch(`/chat/conversation/${questionId}/get-new/?last_message_id=${lastMessageId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.messages.length > 0) {
+                    data.messages.forEach(msg => {
+                        appendMessage(msg);
+                        lastMessageId = msg.id;
+                    });
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    
+                    if (data.chat_closed) {
+                        clearInterval(refreshInterval);
+                        location.reload();
+                    }
+                }
+            })
+            .catch(error => {
+                // Error handling for message fetch
+            });
+    }, 3000); // Poll every 3 seconds
+}
+
+function appendMessage(msg) {
+    // Remove "no messages" notice if it exists
+    const noMessages = chatMessages.querySelector('.no-messages');
+    if (noMessages) {
+        noMessages.remove();
+    }
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${msg.is_current_user ? 'sent' : 'received'}`;
+    messageDiv.dataset.messageId = msg.id;
+    
+    messageDiv.innerHTML = `
+        <div class="message-content">
+            <strong>${msg.sender}</strong>
+            <p>${msg.content}</p>
+            <div class="message-time">
+                ${formatTime(msg.created_at)}
+                ${msg.is_current_user ? '&bull; ' + (msg.is_read ? 'Read' : 'Sent') : ''}
+            </div>
+        </div>
+    `;
+    
+    chatMessages.appendChild(messageDiv);
+}
+
+function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric',
+        hour: 'numeric', 
+        minute: '2-digit',
+        hour12: true 
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Clean up interval when page is unloaded
+window.addEventListener('beforeunload', () => {
+    clearInterval(refreshInterval);
+});
 </script>
 
 {% endblock %}

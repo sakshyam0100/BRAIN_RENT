@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Assigned Questions | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<section>
+
+    <h1>Assigned Questions</h1>
+
+    {% if assignments %}
+
+        {% for assignment in assignments %}
+
+            <div>
+
+                <h3>{{ assignment.question.title }}</h3>
+
+                <p>
+                    Category:
+                    {{ assignment.question.category.name }}
+                </p>
+
+                <p>
+                    Questioner:
+                    {{ assignment.question.questioner.username }}
+                </p>
+
+                <p>
+                    Status:
+                    {{ assignment.question.get_status_display }}
+                </p>
+
+                <a href="{% url 'advisor_question_detail' assignment.question.id %}">
+                    Open Question
+                </a>
+
+            </div>
+
+            <hr>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No assigned questions.</p>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

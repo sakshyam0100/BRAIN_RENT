@@ -4,61 +4,265 @@
 
 {% block content %}
 
-<h1>Inbox</h1>
+<section class="inbox-section">
 
-{% if conversations %}
+    <div class="inbox-header">
+        <h1>Inbox</h1>
+        <p>Your conversations with advisors and questioners</p>
+    </div>
 
-    {% for conversation in conversations %}
+    {% if conversations %}
 
-        <div>
+        <div class="conversations-list">
 
-            <h3>
+            {% for conversation in conversations %}
 
-                {{ conversation.question.title }}
+                <div class="conversation-card">
 
-                {% if conversation.unread_count > 0 %}
+                    <div class="conversation-info">
+                        <h3 class="conversation-title">
+                            {{ conversation.question.title }}
+                            
+                            {% if conversation.unread_count > 0 %}
+                                <span class="unread-badge">
+                                    {{ conversation.unread_count }}
+                                </span>
+                            {% endif %}
+                        </h3>
 
-                    <span
-                        style="
-                            background: red;
-                            color: white;
-                            padding: 2px 8px;
-                            border-radius: 10px;
-                            font-size: 12px;
-                            margin-left: 10px;
-                        "
-                    >
-                        {{ conversation.unread_count }}
-                    </span>
+                        <div class="conversation-meta">
+                            <span class="category-tag">
+                                {{ conversation.question.category.name }}
+                            </span>
+                            <span class="status-tag status-{{ conversation.question.status }}">
+                                {{ conversation.question.get_status_display }}
+                            </span>
+                        </div>
 
-                {% endif %}
+                        <div class="conversation-details">
+                            <p class="conversation-date">
+                                Created: {{ conversation.question.created_at|date:"M d, Y" }}
+                            </p>
+                        </div>
+                    </div>
 
-            </h3>
+                    <div class="conversation-action">
+                        <a href="{% url 'conversation_detail' conversation.question.id %}" 
+                           class="btn btn-primary">
+                            Open Chat
+                        </a>
+                    </div>
 
-            <p>
-                <strong>Category:</strong>
-                {{ conversation.question.category.name }}
-            </p>
+                </div>
 
-            <p>
-                <strong>Status:</strong>
-                {{ conversation.question.get_status_display }}
-            </p>
-
-            <a href="{% url 'conversation_detail' conversation.question.id %}">
-                Open Chat
-            </a>
+            {% endfor %}
 
         </div>
 
-        <hr>
+    {% else %}
 
-    {% endfor %}
+        <div class="no-conversations">
+            <div class="no-conversations-icon">💬</div>
+            <h2>No Conversations Yet</h2>
+            <p>You don't have any active conversations.</p>
+            {% if request.user.role == "questioner" %}
+                <p>Start by asking a question and getting matched with an advisor.</p>
+            {% elif request.user.role == "advisor" %}
+                <p>Accept questions from available questions to start conversations.</p>
+            {% endif %}
+        </div>
 
-{% else %}
+    {% endif %}
 
-    <p>No conversations yet.</p>
+</section>
 
-{% endif %}
+<style>
+.inbox-section {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.inbox-header {
+    margin-bottom: 30px;
+}
+
+.inbox-header h1 {
+    color: #333;
+    margin: 0 0 10px 0;
+}
+
+.inbox-header p {
+    color: #666;
+    margin: 0;
+}
+
+.conversations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.conversation-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #667eea;
+    transition: all 0.2s ease;
+}
+
+.conversation-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.conversation-info {
+    flex: 1;
+}
+
+.conversation-title {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.unread-badge {
+    background: #dc3545;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.conversation-meta {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.category-tag {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-tag {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-accepted {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-completed {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.conversation-details {
+    margin-top: 10px;
+}
+
+.conversation-date {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+.conversation-action {
+    margin-left: 20px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+}
+
+.no-conversations {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    color: #666;
+}
+
+.no-conversations-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.no-conversations h2 {
+    color: #333;
+    margin: 10px 0;
+}
+
+.no-conversations p {
+    margin: 5px 0;
+}
+
+@media (max-width: 768px) {
+    .inbox-section {
+        padding: 10px;
+    }
+    
+    .conversation-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .conversation-action {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
 
 {% endblock %}

@@ -60,6 +60,11 @@ def login_view(request):
 
             login(request, user)
 
+            # Handle redirect to next parameter if exists
+            next_url = request.GET.get('next')
+            if next_url:
+                return redirect(next_url)
+
             if user.role == "questioner":
                 return redirect("questioner_dashboard")
             elif user.role == "advisor":
