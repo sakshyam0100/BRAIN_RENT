@@ -1,10 +1,15 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Edit Advisor Profile | BRAIN-RENT{% endblock %}
 
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/edit_advisor_profile.css' %}">
+{% endblock %}
+
 {% block content %}
 
-<section class="dashboard">
+<section class="edit-profile">
 
     <h1>Edit Advisor Profile</h1>
 

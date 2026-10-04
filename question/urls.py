@@ -28,6 +28,11 @@ urlpatterns = [
     name="accept_question",
     ),
     path(
+    "advisor/questions/<int:question_id>/detail/",
+    views.available_question_detail,
+    name="available_question_detail",
+    ),
+    path(
     "advisor/assigned/",
     views.assigned_questions,
     name="assigned_questions",

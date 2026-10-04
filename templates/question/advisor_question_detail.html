@@ -31,7 +31,7 @@
             <div class="step-label">Answer Submitted</div>
         </div>
         <div class="progress-line"></div>
-        <div class="progress-step {% if assignment.question.review %}active{% endif %} {% if not assignment.question.review %}disabled{% endif %}">
+        <div class="progress-step {% if review %}active{% endif %} {% if not review %}disabled{% endif %}">
             <div class="step-number">4</div>
             <div class="step-label">Review Received</div>
         </div>
@@ -74,21 +74,25 @@
         </div>
     {% endif %}
 
-    {% if assignment.question.review %}
+    {% if review %}
         <div class="review-received">
             <h3>⭐ Review Received</h3>
             <div class="review-content">
                 <div class="rating-display">
-                    <span class="rating-score">{{ assignment.question.review.rating }}</span>
+                    <span class="rating-score">{{ review.rating }}</span>
                     <span class="rating-stars">
-                        {% for i in assignment.question.review.rating %}⭐{% endfor %}
+                        {% if review.rating >= 1 %}⭐{% else %}☆{% endif %}
+                        {% if review.rating >= 2 %}⭐{% else %}☆{% endif %}
+                        {% if review.rating >= 3 %}⭐{% else %}☆{% endif %}
+                        {% if review.rating >= 4 %}⭐{% else %}☆{% endif %}
+                        {% if review.rating >= 5 %}⭐{% else %}☆{% endif %}
                     </span>
                 </div>
-                {% if assignment.question.review.comment %}
-                    <p class="review-comment">"{{ assignment.question.review.comment }}"</p>
+                {% if review.comment %}
+                    <p class="review-comment">"{{ review.comment }}"</p>
                 {% endif %}
                 <p class="review-meta">
-                    <strong>Reviewed:</strong> {{ assignment.question.review.created_at|date:"F d, Y g:i A" }}
+                    <strong>Reviewed:</strong> {{ review.created_at|date:"F d, Y g:i A" }}
                 </p>
             </div>
         </div>

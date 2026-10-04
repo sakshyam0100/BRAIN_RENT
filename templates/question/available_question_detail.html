@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block title %}Question Details{% endblock %}
+
+{% block content %}
+
+<section class="question-detail-section">
+
+    <div class="page-header">
+        <a href="{% url 'available_questions' %}" class="btn btn-secondary">
+            &larr; Back to Available Questions
+        </a>
+        <h1>Question Details</h1>
+    </div>
+
+    <div class="question-detail-card">
+
+        <div class="question-detail-header">
+            <h2 class="question-detail-title">{{ question.title }}</h2>
+            <span class="category-badge category-large">{{ question.category.name }}</span>
+        </div>
+
+        <div class="questioner-info-large">
+            <div class="questioner-avatar-large">
+                {% if question.questioner.profile_picture %}
+                    <img src="{{ question.questioner.profile_picture.url }}" alt="{{ question.questioner.username }}">
+                {% else %}
+                    <div class="avatar-placeholder-large">{{ question.questioner.username|first|upper }}</div>
+                {% endif %}
+            </div>
+            <div class="questioner-details-large">
+                <div class="questioner-name-large">{{ question.questioner.username }}</div>
+                <div class="question-date-large">Posted {{ question.created_at|date:"F d, Y g:i A" }}</div>
+            </div>
+        </div>
+
+        <div class="question-detail-body">
+            <h3>Description</h3>
+            <div class="question-description-full">{{ question.description }}</div>
+        </div>
+
+        <div class="question-detail-meta">
+            <div class="meta-row">
+                <span class="meta-label">Status:</span>
+                <span class="status-badge status-{{ question.status }}">{{ question.get_status_display }}</span>
+            </div>
+            <div class="meta-row">
+                <span class="meta-label">Category:</span>
+                <span class="meta-value">{{ question.category.name }}</span>
+            </div>
+            <div class="meta-row">
+                <span class="meta-label">Posted:</span>
+                <span class="meta-value">{{ question.created_at|date:"F d, Y g:i A" }}</span>
+            </div>
+        </div>
+
+        <div class="question-detail-actions">
+            <a href="{% url 'accept_question' question.id %}" class="btn btn-success btn-large">
+                Accept This Question
+            </a>
+            <a href="{% url 'available_questions' %}" class="btn btn-secondary btn-large">
+                Cancel
+            </a>
+        </div>
+
+    </div>
+
+</section>
+
+<style>
+.question-detail-section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-header {
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    color: #333;
+    margin: 15px 0 0 0;
+}
+
+.question-detail-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.question-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.question-detail-title {
+    margin: 0;
+    color: #333;
+    font-size: 28px;
+    flex: 1;
+}
+
+.category-large {
+    font-size: 14px;
+    padding: 6px 14px;
+}
+
+.questioner-info-large {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.questioner-avatar-large img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-placeholder-large {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #667eea;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.questioner-details-large {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.questioner-name-large {
+    font-weight: 600;
+    color: #333;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.question-date-large {
+    font-size: 14px;
+    color: #666;
+}
+
+.question-detail-body {
+    margin-bottom: 25px;
+}
+
+.question-detail-body h3 {
+    color: #333;
+    margin: 0 0 15px 0;
+    font-size: 20px;
+}
+
+.question-description-full {
+    color: #555;
+    line-height: 1.7;
+    font-size: 16px;
+    white-space: pre-wrap;
+}
+
+.question-detail-meta {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.meta-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.meta-row:last-child {
+    border-bottom: none;
+}
+
+.meta-label {
+    font-weight: 600;
+    color: #666;
+    font-size: 14px;
+}
+
+.meta-value {
+    color: #333;
+    font-size: 14px;
+}
+
+.category-badge {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-accepted {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-completed {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.question-detail-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    padding-top: 20px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-large {
+    min-width: 200px;
+    text-align: center;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #218838;
+}
+
+@media (max-width: 768px) {
+    .question-detail-section {
+        padding: 10px;
+    }
+
+    .question-detail-card {
+        padding: 20px;
+    }
+
+    .question-detail-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .question-detail-title {
+        font-size: 22px;
+    }
+
+    .question-detail-actions {
+        flex-direction: column;
+    }
+
+    .btn-large {
+        width: 100%;
+    }
+}
+</style>
+
+{% endblock %}

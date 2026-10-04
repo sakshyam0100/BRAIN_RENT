@@ -7,3 +7,6 @@ def home(request):
 # Create your views here.
 def register_choice(request):
     return render(request, "accounts/register_choice.html")
+
+def about(request):
+    return render(request, "about.html")

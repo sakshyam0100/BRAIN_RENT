@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About Us | BRAIN-RENT{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/about.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="about-page">
+
+    <div class="about-container">
+
+        <div class="about-header">
+            <h1>About BRAIN-RENT</h1>
+            <div class="header-line"></div>
+        </div>
+
+        <div class="about-content">
+
+            <div class="about-section">
+                <h2>// WHAT IS BRAIN-RENT?</h2>
+                <p>
+                    BRAIN-RENT is a cutting-edge consultation platform that connects Questioners with Advisors across diverse domains including technology, education, business, and specialized fields. Our platform leverages intelligent matching to ensure you get the right expertise for your questions.
+                </p>
+            </div>
+
+            <div class="about-section">
+                <h2>// HOW IT WORKS</h2>
+                <div class="workflow-grid">
+                    <div class="workflow-step">
+                        <div class="step-number">01</div>
+                        <h3>Ask Question</h3>
+                        <p>Submit your question and select a category</p>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">02</div>
+                        <h3>Get Matched</h3>
+                        <p>Approved advisors view and accept your question</p>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">03</div>
+                        <h3>Consult</h3>
+                        <p>Chat with your advisor through our secure system</p>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">04</div>
+                        <h3>Get Answer</h3>
+                        <p>Receive official answers and review your advisor</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-section">
+                <h2>// OUR MISSION</h2>
+                <p>
+                    At BRAIN-RENT, we believe knowledge should be accessible and expertise should be valued. Our mission is to create a seamless platform where questioners can find reliable answers and advisors can monetize their expertise. We prioritize security, transparency, and quality in every interaction.
+                </p>
+            </div>
+
+            <div class="about-section">
+                <h2>// WHY CHOOSE US</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon"></div>
+                        <h3>Secure Platform</h3>
+                        <p>End-to-end encrypted communications and verified advisors</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"></div>
+                        <h3>Fast Response</h3>
+                        <p>Quick question acceptance and real-time chat system</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"></div>
+                        <h3>Verified Experts</h3>
+                        <p>All advisors undergo rigorous verification process</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"></div>
+                        <h3>Secure Payments</h3>
+                        <p>Integrated payment system with Khalti gateway</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-section">
+                <h2>// GET STARTED</h2>
+                <p>
+                    Ready to tap into expert knowledge? Join BRAIN-RENT today and connect with verified advisors who can help you solve your problems and answer your questions.
+                </p>
+                <div class="cta-buttons">
+                    <a href="{% url 'login' %}" class="cta-btn primary">Login</a>
+                    <a href="{% url 'register_choice' %}" class="cta-btn secondary">Register</a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

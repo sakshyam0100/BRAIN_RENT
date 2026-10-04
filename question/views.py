@@ -243,6 +243,36 @@ def available_questions(request):
 
 
 @login_required
+def available_question_detail(request, question_id):
+    """View details of an available (pending) question before accepting"""
+    if request.user.role != "advisor":
+        return HttpResponseForbidden("Access Denied")
+
+    profile = AdvisorProfile.objects.filter(
+        user=request.user
+    ).first()
+
+    if not profile or profile.verification_status != "approved":
+        return HttpResponseForbidden(
+            "Your advisor account is not approved yet."
+        )
+
+    question = get_object_or_404(
+        Question,
+        id=question_id,
+        status="pending",
+    )
+
+    return render(
+        request,
+        "question/available_question_detail.html",
+        {
+            "question": question,
+        },
+    )
+
+
+@login_required
 def accept_question(request, question_id):
 
     if request.user.role != "advisor":
@@ -347,12 +377,19 @@ def advisor_question_detail(request, question_id):
         question=assignment.question
     ).exists()
 
+    # Check if question has a review
+    from review.models import Review
+    review = Review.objects.filter(
+        question=assignment.question
+    ).select_related('questioner').first()
+
     return render(
         request,
         "question/advisor_question_detail.html",
         {
             "assignment": assignment,
             "has_answer": has_answer,
+            "review": review,
         },
     )
 

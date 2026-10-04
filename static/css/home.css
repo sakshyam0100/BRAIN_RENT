@@ -1,98 +1,104 @@
-/* Home Page Styles */
-.home-container {
-    min-height: calc(100vh - 60px);
+/* Home Page Styles - BRAIN-RENT Theme */
+.home-page {
+    min-height: calc(100vh - 80px);
+    background: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
 }
 
-.home-content {
+.home-container {
+    width: 100%;
     max-width: 600px;
-    text-align: center;
-    padding: 40px 20px;
 }
 
-.welcome-section {
-    background: white;
+.hero-card {
+    background: #667eea;
     padding: 60px 40px;
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    text-align: center;
 }
 
-.welcome-section h1 {
-    font-size: 36px;
+.hero-card h1 {
+    font-size: 42px;
     font-weight: 700;
-    color: #333;
-    margin-bottom: 20px;
+    color: white;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.welcome-section p {
+.tagline {
     font-size: 18px;
-    color: #666;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 40px;
+    font-weight: 400;
     line-height: 1.6;
-    margin-bottom: 30px;
 }
 
 .auth-buttons {
     display: flex;
     gap: 15px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .btn {
-    padding: 15px 30px;
+    padding: 14px 32px;
     border: none;
     border-radius: 8px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     text-decoration: none;
     display: inline-block;
 }
 
 .btn-primary {
-    background: #667eea;
-    color: white;
+    background: white;
+    color: #667eea;
 }
 
 .btn-primary:hover {
-    background: #5568d3;
+    background: #f8f9fa;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .btn-secondary {
-    background: #6c757d;
+    background: rgba(255, 255, 255, 0.2);
     color: white;
+    border: 2px solid white;
 }
 
 .btn-secondary:hover {
-    background: #5a6268;
+    background: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .welcome-section {
-        padding: 40px 20px;
+    .hero-card {
+        padding: 40px 30px;
     }
-    
-    .welcome-section h1 {
-        font-size: 28px;
+
+    .hero-card h1 {
+        font-size: 32px;
     }
-    
-    .welcome-section p {
+
+    .tagline {
         font-size: 16px;
     }
-    
+
     .auth-buttons {
         flex-direction: column;
+        align-items: center;
     }
-    
+
     .btn {
         width: 100%;
+        max-width: 300px;
     }
 }

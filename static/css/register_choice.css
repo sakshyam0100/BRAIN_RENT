@@ -3,12 +3,12 @@
 ========================== */
 
 .register-choice {
-    min-height: calc(100vh - 80px);
+    min-height: calc(100vh - 140px);
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 60px 20px;
-    background: #f8f9fa;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .register-choice__container {
@@ -19,17 +19,18 @@
 .register-choice__header {
     text-align: center;
     margin-bottom: 50px;
+    color: white;
 }
 
 .register-choice__header h1 {
     font-size: 2.5rem;
-    color: #111827;
+    color: white;
     margin-bottom: 10px;
 }
 
 .register-choice__header p {
-    color: #6b7280;
-    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
 }
 
 .register-choice__cards {
@@ -40,55 +41,59 @@
 
 .choice-card {
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 40px 30px;
+    border: none;
+    border-radius: 12px;
+    padding: 50px 40px;
     text-align: center;
-    transition: 0.25s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .choice-card:hover {
-    border-color: #2563eb;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .choice-card__icon {
-    font-size: 3rem;
-    margin-bottom: 20px;
+    font-size: 4rem;
+    margin-bottom: 25px;
 }
 
 .choice-card h2 {
     margin-bottom: 15px;
-    color: #111827;
+    color: #333;
+    font-size: 24px;
 }
 
 .choice-card p {
-    color: #6b7280;
+    color: #666;
     line-height: 1.7;
     margin-bottom: 30px;
+    font-size: 16px;
 }
 
 .choice-card__button {
     display: inline-block;
     text-decoration: none;
-    background: #2563eb;
+    background: #667eea;
     color: white;
-    padding: 12px 24px;
-    border-radius: 6px;
+    padding: 14px 28px;
+    border-radius: 8px;
     font-weight: 600;
 }
 
 .choice-card__button:hover {
-    background: #1d4ed8;
+    background: #5568d3;
 }
 
 .register-choice__footer {
     text-align: center;
     margin-top: 40px;
+    color: white;
 }
 
 .register-choice__footer a {
-    color: #2563eb;
+    color: white;
     text-decoration: none;
+    font-weight: 600;
 }
 
 .register-choice__footer a:hover {
@@ -98,9 +103,23 @@
 /* Responsive */
 
 @media (max-width: 768px) {
+    .register-choice {
+        padding: 40px 20px;
+    }
+
+    .register-choice__header h1 {
+        font-size: 2rem;
+    }
 
     .register-choice__cards {
         grid-template-columns: 1fr;
     }
 
+    .choice-card {
+        padding: 40px 30px;
+    }
+
+    .choice-card__icon {
+        font-size: 3rem;
+    }
 }

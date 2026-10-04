@@ -31,8 +31,7 @@
                     <li><a href="{% url 'payment_history' %}">Payment History</a></li>
                 {% endif %}
             {% else %}
-                <li><a href="#">Categories</a></li>
-                <li><a href="#">About</a></li>
+                <li><a href="{% url 'about' %}">About</a></li>
                 <li><a href="#">Contact</a></li>
             {% endif %}
         </ul>
@@ -46,7 +45,6 @@
                 <a href="{% url 'logout' %}" class="login-btn">Logout</a>
             {% else %}
                 <a href="{% url 'login' %}" class="login-btn">Login</a>
-                <a href="{% url 'questioner_register' %}" class="register-btn">Register</a>
             {% endif %}
         </div>
 

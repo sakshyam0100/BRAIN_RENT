@@ -1,0 +1,147 @@
+/* Ask Question Page Styles */
+.ask-question {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background: white;
+}
+
+.ask-question__container {
+    background: white;
+    padding: 50px;
+    border: 2px solid #667eea;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+    width: 100%;
+    max-width: 650px;
+}
+
+.ask-question__container h1 {
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.ask-question__container > p {
+    color: #666;
+    margin-bottom: 40px;
+    line-height: 1.7;
+    font-size: 16px;
+}
+
+.ask-question__container form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.ask-question__container form p {
+    margin: 0;
+}
+
+.ask-question__container label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.ask-question__container input[type="text"],
+.ask-question__container select,
+.ask-question__container textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    background: #f8f9fa;
+    color: #333;
+}
+
+.ask-question__container input:focus,
+.ask-question__container select:focus,
+.ask-question__container textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.ask-question__container select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23667eea'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 20px;
+    padding-right: 48px;
+}
+
+.ask-question__container textarea {
+    min-height: 180px;
+    resize: vertical;
+}
+
+.ask-question__container .helptext {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.ask-question__container button[type="submit"] {
+    width: 100%;
+    padding: 16px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+}
+
+.ask-question__container button[type="submit"]:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.ask-question__container .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ask-question__container .errorlist li {
+    background: #fee;
+    color: #c33;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    border-left: 4px solid #c33;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ask-question {
+        padding: 40px 20px;
+    }
+
+    .ask-question__container {
+        padding: 35px 25px;
+    }
+
+    .ask-question__container h1 {
+        font-size: 26px;
+    }
+}

@@ -15,9 +15,12 @@ from .forms import MessageForm
 @login_required
 def conversation_detail(request, question_id):
 
-    conversation = get_object_or_404(
-        Conversation,
-        question_id=question_id,
+    # Try to get existing conversation or create one if the question is accepted
+    from question.models import Question
+    question = get_object_or_404(Question, id=question_id)
+
+    conversation, created = Conversation.objects.get_or_create(
+        question=question
     )
 
     user = request.user
@@ -26,7 +29,7 @@ def conversation_detail(request, question_id):
 
         if conversation.question.questioner != user:
             return HttpResponseForbidden("Access Denied")
-        
+
         # Check if payment is completed
         from payment.models import Payment
         payment = Payment.objects.filter(
@@ -34,7 +37,7 @@ def conversation_detail(request, question_id):
             questioner=user,
             status='completed'
         ).first()
-        
+
         if not payment:
             return HttpResponseForbidden("Payment required to access chat")
 
@@ -171,9 +174,11 @@ def conversation_list(request):
 @require_POST
 def send_message_ajax(request, question_id):
     """Send message via AJAX without page refresh"""
-    conversation = get_object_or_404(
-        Conversation,
-        question_id=question_id,
+    from question.models import Question
+    question = get_object_or_404(Question, id=question_id)
+
+    conversation, created = Conversation.objects.get_or_create(
+        question=question
     )
 
     user = request.user
@@ -182,6 +187,15 @@ def send_message_ajax(request, question_id):
     if user.role == "questioner":
         if conversation.question.questioner != user:
             return JsonResponse({'success': False, 'error': 'Access Denied'}, status=403)
+        # Check if payment is completed for questioners
+        from payment.models import Payment
+        payment = Payment.objects.filter(
+            question=conversation.question,
+            questioner=user,
+            status='completed'
+        ).first()
+        if not payment:
+            return JsonResponse({'success': False, 'error': 'Payment required to access chat'}, status=403)
     elif user.role == "advisor":
         profile = get_object_or_404(AdvisorProfile, user=user)
         if not QuestionAssignment.objects.filter(
@@ -200,7 +214,7 @@ def send_message_ajax(request, question_id):
     try:
         data = json.loads(request.body)
         content = data.get('content', '').strip()
-        
+
         if not content:
             return JsonResponse({'success': False, 'error': 'Message cannot be empty'}, status=400)
 
@@ -230,9 +244,11 @@ def send_message_ajax(request, question_id):
 @login_required
 def get_new_messages_ajax(request, question_id):
     """Get new messages via AJAX for auto-refresh"""
-    conversation = get_object_or_404(
-        Conversation,
-        question_id=question_id,
+    from question.models import Question
+    question = get_object_or_404(Question, id=question_id)
+
+    conversation, created = Conversation.objects.get_or_create(
+        question=question
     )
 
     user = request.user
@@ -241,6 +257,15 @@ def get_new_messages_ajax(request, question_id):
     if user.role == "questioner":
         if conversation.question.questioner != user:
             return JsonResponse({'success': False, 'error': 'Access Denied'}, status=403)
+        # Check if payment is completed for questioners
+        from payment.models import Payment
+        payment = Payment.objects.filter(
+            question=conversation.question,
+            questioner=user,
+            status='completed'
+        ).first()
+        if not payment:
+            return JsonResponse({'success': False, 'error': 'Payment required to access chat'}, status=403)
     elif user.role == "advisor":
         profile = get_object_or_404(AdvisorProfile, user=user)
         if not QuestionAssignment.objects.filter(
@@ -254,7 +279,7 @@ def get_new_messages_ajax(request, question_id):
 
     # Get the timestamp of the last message the client has
     last_message_id = request.GET.get('last_message_id', 0)
-    
+
     # Get messages newer than the last one
     new_messages = conversation.messages.filter(
         id__gt=last_message_id

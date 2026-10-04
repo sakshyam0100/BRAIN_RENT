@@ -72,11 +72,9 @@
                         <a href="{% url 'advisor_question_detail' assignment.question.id %}" class="btn btn-primary">
                             View Details
                         </a>
-                        {% if assignment.question.payment and assignment.question.payment.status == 'completed' %}
-                            <a href="{% url 'conversation_detail' assignment.question.id %}" class="btn btn-success">
-                                Open Chat
-                            </a>
-                        {% endif %}
+                        <a href="{% url 'conversation_detail' assignment.question.id %}" class="btn btn-success">
+                            Open Chat
+                        </a>
                     </div>
                 </div>
 

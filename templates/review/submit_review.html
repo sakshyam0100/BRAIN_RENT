@@ -1,6 +1,11 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Review Advisor | BRAIN-RENT{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/submit_review.css' %}">
+{% endblock %}
 
 {% block content %}
 
@@ -33,9 +38,9 @@
             <div class="rating-choices">
                 {% for choice_value, choice_label in form.fields.rating.choices %}
                     <div class="rating-option">
-                        <input type="radio" 
-                               name="rating" 
-                               id="rating_{{ choice_value }}" 
+                        <input type="radio"
+                               name="rating"
+                               id="rating_{{ choice_value }}"
                                value="{{ choice_value }}"
                                {% if form.rating.value == choice_value %}checked{% endif %}
                                required>
@@ -77,193 +82,5 @@
     </form>
 
 </section>
-
-<style>
-.review-section {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.review-section h1 {
-    color: #333;
-    margin-bottom: 20px;
-}
-
-.review-info {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
-
-.review-info h2 {
-    margin-top: 0;
-    color: #555;
-}
-
-.review-instructions {
-    color: #666;
-    line-height: 1.6;
-}
-
-.review-form {
-    background: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.form-group {
-    margin-bottom: 25px;
-}
-
-.form-label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: #333;
-}
-
-.rating-choices {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.rating-option {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border: 2px solid #e9ecef;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.rating-option:hover {
-    border-color: #667eea;
-    background: #f8f9ff;
-}
-
-.rating-option input[type="radio"] {
-    margin-right: 10px;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-}
-
-.rating-label {
-    cursor: pointer;
-    font-size: 16px;
-    color: #333;
-}
-
-.rating-option input[type="radio"]:checked + .rating-label {
-    font-weight: 600;
-    color: #667eea;
-}
-
-.rating-option:has(input:checked) {
-    border-color: #667eea;
-    background: #f0f4ff;
-}
-
-.form-control {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 14px;
-    font-family: inherit;
-    resize: vertical;
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.form-help {
-    display: block;
-    margin-top: 5px;
-    color: #666;
-    font-size: 13px;
-}
-
-.error-message {
-    color: #dc3545;
-    font-size: 14px;
-    margin-top: 5px;
-}
-
-.alert {
-    padding: 15px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-}
-
-.alert-danger {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-.form-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 30px;
-}
-
-.btn {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    transition: all 0.2s ease;
-}
-
-.btn-primary {
-    background: #667eea;
-    color: white;
-}
-
-.btn-primary:hover {
-    background: #5568d3;
-}
-
-.btn-secondary {
-    background: #6c757d;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background: #5a6268;
-}
-
-@media (max-width: 768px) {
-    .review-section {
-        padding: 10px;
-    }
-    
-    .review-form {
-        padding: 20px;
-    }
-    
-    .form-actions {
-        flex-direction: column;
-    }
-    
-    .btn {
-        width: 100%;
-        text-align: center;
-    }
-}
-</style>
 
 {% endblock %}
