@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Advisor Profile | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<section class="dashboard">
+
+    <h1>Edit Advisor Profile</h1>
+
+    <form method="post" enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        <h3>Profile Picture</h3>
+
+        {{ user_form.as_p }}
+
+        <hr>
+
+        <h3>Advisor Information</h3>
+
+        {{ profile_form.as_p }}
+
+        <button type="submit">
+            Save Changes
+        </button>
+
+        <a href="{% url 'advisor_dashboard' %}">
+            <button type="button">
+                Cancel
+            </button>
+        </a>
+
+    </form>
+
+</section>
+
+{% endblock %}

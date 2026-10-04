@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Register | BRAIN-RENT
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/register_choice.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="register-choice">
+
+    <div class="register-choice__container">
+
+        <div class="register-choice__header">
+            <h1>Join BRAIN-RENT</h1>
+
+            <p>
+                Select how you want to use the platform.
+            </p>
+        </div>
+
+        <div class="register-choice__cards">
+
+            <article class="choice-card">
+
+                <div class="choice-card__icon">
+                    👤
+                </div>
+
+                <h2>Questioner</h2>
+
+                <p>
+                    Ask questions and receive guidance from verified advisors.
+                </p>
+
+                <a href="{% url 'questioner_register' %}" class="choice-card__button">
+                   Continue as Questioner
+                </a>
+
+            </article>
+
+            <article class="choice-card">
+
+                <div class="choice-card__icon">
+                    🎓
+                </div>
+
+                <h2>Advisor</h2>
+
+                <p>
+                    Share your expertise and earn by helping others.
+                </p>
+
+               <a href="{% url 'advisor_register' %}" class="choice-card__button">
+                   Continue as Advisor
+               </a>
+
+            </article>
+
+        </div>
+
+        <div class="register-choice__footer">
+            <p>
+                Already have an account?
+                <a href="#">Login</a>
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

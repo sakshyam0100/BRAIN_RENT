@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Questioner Dashboard | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<section class="dashboard">
+
+    <h1>Welcome, {{ request.user.first_name }}!</h1>
+
+    <p>
+        Welcome to your Questioner Dashboard.
+    </p>
+
+</section>
+
+{% endblock %}

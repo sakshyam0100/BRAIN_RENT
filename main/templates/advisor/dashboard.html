@@ -1,0 +1,502 @@
+    {% extends "base.html" %}
+
+    {% block title %}Advisor Dashboard | BRAIN-RENT{% endblock %}
+
+    {% block content %}
+
+    <section class="dashboard">
+
+        <h1>Welcome, {{ request.user.first_name }}!</h1>
+
+        {% if profile %}
+
+            <h3>Verification Status</h3>
+
+            <div class="verification-status">
+                <span class="status-badge status-{{ profile.verification_status }}">
+                    {{ profile.get_verification_status_display }}
+                </span>
+            </div>
+
+            <div class="dashboard-actions">
+                <a href="{% url 'edit_advisor_profile' %}">
+                    <button type="button">Edit Profile</button>
+                </a>
+                <a href="{% url 'advisor_profile_view' profile.id %}">
+                    <button type="button" style="background: #667eea;">View Public Profile</button>
+                </a>
+            </div>
+
+            <hr>
+
+            <h3>Consultation Rate</h3>
+            <div class="consultation-rate">
+                {% if profile.consultation_rate > 0 %}
+                    <p class="rate-amount">Rs. {{ profile.consultation_rate|floatformat:2 }} per session</p>
+                    <p class="rate-note">Questioners will need to pay this amount to chat with you</p>
+                {% else %}
+                    <p class="no-rate">You haven't set your consultation rate yet.</p>
+                    <p class="rate-note">Set your rate to start accepting paid consultations</p>
+                {% endif %}
+            </div>
+
+            <hr>
+
+            <h2>Earnings Overview</h2>
+            
+            <div class="earnings-stats">
+                <div class="earning-card earning-total">
+                    <div class="earning-label">Total Earnings</div>
+                    <div class="earning-amount">Rs. {{ total_earnings|floatformat:2 }}</div>
+                    <div class="earning-meta">{{ total_payments }} completed payments</div>
+                </div>
+                
+                <div class="earning-card earning-monthly">
+                    <div class="earning-label">This Month</div>
+                    <div class="earning-amount">Rs. {{ monthly_earnings|floatformat:2 }}</div>
+                    <div class="earning-meta">Current month earnings</div>
+                </div>
+                
+                <div class="earning-card earning-weekly">
+                    <div class="earning-label">This Week</div>
+                    <div class="earning-amount">Rs. {{ weekly_earnings|floatformat:2 }}</div>
+                    <div class="earning-meta">Current week earnings</div>
+                </div>
+                
+                <div class="earning-card earning-pending">
+                    <div class="earning-label">Pending</div>
+                    <div class="earning-amount">{{ pending_payments }}</div>
+                    <div class="earning-meta">Awaiting completion</div>
+                </div>
+            </div>
+            
+            {% if recent_earnings %}
+                <div class="recent-earnings">
+                    <h3>Recent Earnings</h3>
+                    <div class="earnings-list">
+                        {% for payment in recent_earnings %}
+                            <div class="earning-item">
+                                <div class="earning-info">
+                                    <div class="earning-question">{{ payment.question.title }}</div>
+                                    <div class="earning-customer">
+                                        <strong>Customer:</strong> {{ payment.questioner.username }}
+                                    </div>
+                                    <div class="earning-date">
+                                        {{ payment.completed_at|date:"M d, Y H:i" }}
+                                    </div>
+                                </div>
+                                <div class="earning-value">
+                                    <div class="earning-amount">Rs. {{ payment.amount|floatformat:2 }}</div>
+                                    <div class="earning-status status-completed">Completed</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <hr>
+
+            <h2>Advisor Rating</h2>
+
+            {% if average_rating %}
+
+                <p>
+                    ⭐ <strong>{{ average_rating|floatformat:1 }}/5</strong>
+                </p>
+
+            {% else %}
+
+                <p>
+                    No ratings yet.
+                </p>
+
+            {% endif %}
+
+            <hr>
+
+            <h2>My Reviews</h2>
+
+            {% if reviews %}
+
+                <div class="reviews-list">
+                    {% for review in reviews %}
+
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="review-rating">
+                                    {% for i in "12345" %}
+                                        {% if i <= review.rating %}⭐{% else %}☆{% endif %}
+                                    {% endfor %}
+                                    <span class="rating-number">{{ review.rating }}/5</span>
+                                </div>
+                                <div class="review-date">
+                                    {{ review.created_at|date:"M d, Y" }}
+                                    {% if review.updated_at != review.created_at %}
+                                        <span class="updated-badge">(Updated)</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="review-question">
+                                <strong>Question:</strong> {{ review.question.title }}
+                            </div>
+
+                            {% if review.comment %}
+                                <div class="review-comment">
+                                    "{{ review.comment }}"
+                                </div>
+                            {% endif %}
+
+                            <div class="review-footer">
+                                <span class="reviewer">
+                                    <strong>By:</strong> {{ review.questioner.username }}
+                                </span>
+                                <span class="category">
+                                    <strong>Category:</strong> {{ review.question.category.name }}
+                                </span>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+                </div>
+
+            {% else %}
+
+                <div class="no-reviews">
+                    <p>You haven't received any reviews yet.</p>
+                    <p>Complete more consultations to build your reputation!</p>
+                </div>
+
+            {% endif %}
+
+        {% else %}
+
+            <p>
+                You have not completed your advisor profile yet.
+            </p>
+
+            <a href="{% url 'advisor_verification' %}">
+                Complete Verification
+            </a>
+
+        {% endif %}
+
+    </section>
+
+<style>
+.dashboard {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.dashboard h1 {
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.verification-status {
+    margin-bottom: 20px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-under_review {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.status-approved {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-rejected {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-suspended {
+    background: #fd7e14;
+    color: white;
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.dashboard-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    background: #6c757d;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.dashboard-actions button:hover {
+    background: #5a6268;
+}
+
+.consultation-rate {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.rate-amount {
+    font-size: 24px;
+    font-weight: bold;
+    color: #28a745;
+    margin: 0 0 10px 0;
+}
+
+.no-rate {
+    font-size: 18px;
+    color: #6c757d;
+    margin: 0 0 10px 0;
+}
+
+.rate-note {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+.earnings-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.earning-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    border-top: 4px solid;
+}
+
+.earning-total {
+    border-color: #28a745;
+}
+
+.earning-monthly {
+    border-color: #667eea;
+}
+
+.earning-weekly {
+    border-color: #ffc107;
+}
+
+.earning-pending {
+    border-color: #17a2b8;
+}
+
+.earning-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.earning-amount {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.earning-meta {
+    font-size: 12px;
+    color: #999;
+}
+
+.recent-earnings {
+    margin-bottom: 30px;
+}
+
+.recent-earnings h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.earnings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.earning-item {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 3px solid #28a745;
+}
+
+.earning-info {
+    flex: 1;
+}
+
+.earning-question {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.earning-customer {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 3px;
+}
+
+.earning-date {
+    font-size: 12px;
+    color: #999;
+}
+
+.earning-value {
+    text-align: right;
+}
+
+.earning-item .earning-amount {
+    font-size: 20px;
+    font-weight: bold;
+    color: #28a745;
+    margin-bottom: 5px;
+}
+
+.earning-status {
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.status-completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.review-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    transition: box-shadow 0.2s ease;
+}
+
+.review-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.review-rating {
+    font-size: 24px;
+    color: #ffc107;
+}
+
+.rating-number {
+    font-size: 16px;
+    color: #666;
+    margin-left: 10px;
+}
+
+.review-date {
+    color: #666;
+    font-size: 14px;
+}
+
+.updated-badge {
+    background: #ffc107;
+    color: #333;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    margin-left: 5px;
+}
+
+.review-question {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.review-comment {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 3px solid #667eea;
+    margin-bottom: 10px;
+    font-style: italic;
+    color: #555;
+}
+
+.review-footer {
+    display: flex;
+    gap: 20px;
+    color: #666;
+    font-size: 14px;
+}
+
+.no-reviews {
+    text-align: center;
+    padding: 40px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    color: #666;
+}
+
+.no-reviews p {
+    margin: 5px 0;
+}
+
+@media (max-width: 768px) {
+    .review-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .review-footer {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+</style>
+
+    {% endblock %}

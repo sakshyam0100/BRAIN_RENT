@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}My Reviews | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<section class="my-reviews-section">
+
+    <h1>My Reviews</h1>
+
+    <p class="reviews-intro">
+        Here are all the reviews you've given to advisors for completed consultations.
+    </p>
+
+    {% if reviews %}
+
+        <div class="reviews-list">
+            {% for review in reviews %}
+
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="advisor-info">
+                            <h3>{{ review.advisor.user.get_full_name|default:review.advisor.user.username }}</h3>
+                            <a href="{% url 'advisor_profile_view' review.advisor.id %}" class="view-profile-link">
+                                View Profile
+                            </a>
+                        </div>
+                        <div class="review-rating">
+                            {% for i in "12345" %}
+                                {% if i <= review.rating %}⭐{% else %}☆{% endif %}
+                            {% endfor %}
+                            <span class="rating-number">{{ review.rating }}/5</span>
+                        </div>
+                    </div>
+
+                    <div class="review-question">
+                        <strong>Question:</strong> {{ review.question.title }}
+                    </div>
+
+                    <div class="review-meta">
+                        <span class="category">
+                            <strong>Category:</strong> {{ review.question.category.name }}
+                        </span>
+                        <span class="date">
+                            <strong>Reviewed:</strong> {{ review.created_at|date:"F d, Y" }}
+                        </span>
+                        {% if review.updated_at != review.created_at %}
+                            <span class="updated">
+                                <strong>Updated:</strong> {{ review.updated_at|date:"F d, Y" }}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    {% if review.comment %}
+                        <div class="review-comment">
+                            "{{ review.comment }}"
+                        </div>
+                    {% endif %}
+
+                    <div class="review-actions">
+                        <a href="{% url 'edit_review' review.id %}" class="btn btn-edit">
+                            Edit Review
+                        </a>
+                        <a href="{% url 'delete_review' review.id %}" class="btn btn-delete">
+                            Delete Review
+                        </a>
+                    </div>
+                </div>
+
+            {% endfor %}
+        </div>
+
+    {% else %}
+
+        <div class="no-reviews">
+            <div class="no-reviews-icon">📝</div>
+            <h2>No Reviews Yet</h2>
+            <p>You haven't submitted any reviews yet.</p>
+            <p>Complete consultations with advisors and share your experience to help others!</p>
+            <a href="{% url 'my_questions' %}" class="btn btn-primary">
+                View My Questions
+            </a>
+        </div>
+
+    {% endif %}
+
+</section>
+
+<style>
+.my-reviews-section {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.my-reviews-section h1 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.reviews-intro {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 16px;
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-card {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #667eea;
+    transition: box-shadow 0.2s ease;
+}
+
+.review-card:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.advisor-info h3 {
+    margin: 0 0 5px 0;
+    color: #333;
+}
+
+.view-profile-link {
+    color: #667eea;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.view-profile-link:hover {
+    text-decoration: underline;
+}
+
+.review-rating {
+    font-size: 24px;
+    color: #ffc107;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rating-number {
+    font-size: 16px;
+    color: #666;
+}
+
+.review-question {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 16px;
+}
+
+.review-meta {
+    display: flex;
+    gap: 20px;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.review-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.updated {
+    color: #ffc107;
+}
+
+.review-comment {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 3px solid #667eea;
+    margin-bottom: 15px;
+    font-style: italic;
+    color: #555;
+}
+
+.review-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+
+.btn-edit {
+    background: #ffc107;
+    color: #333;
+}
+
+.btn-edit:hover {
+    background: #e0a800;
+}
+
+.btn-delete {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #c82333;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+    padding: 12px 24px;
+    font-size: 16px;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+}
+
+.no-reviews {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    color: #666;
+}
+
+.no-reviews-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.no-reviews h2 {
+    color: #333;
+    margin: 10px 0;
+}
+
+.no-reviews p {
+    margin: 5px 0;
+}
+
+@media (max-width: 768px) {
+    .my-reviews-section {
+        padding: 10px;
+    }
+    
+    .review-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .review-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .review-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
+
+{% endblock %}

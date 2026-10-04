@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Available Questions{% endblock %}
+
+{% block content %}
+
+<h1>Available Questions</h1>
+
+<!-- Search Form -->
+<form method="get" action="{% url 'available_questions' %}" style="margin-bottom: 20px;">
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <input 
+            type="text" 
+            name="q" 
+            value="{{ search_query }}" 
+            placeholder="Search questions by title or description..."
+            style="flex: 1; min-width: 200px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
+        >
+        <input 
+            type="text" 
+            name="category" 
+            value="{{ category_filter }}" 
+            placeholder="Filter by category..."
+            style="flex: 1; min-width: 150px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
+        >
+        <button type="submit" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            Search
+        </button>
+        {% if search_query or category_filter %}
+            <a href="{% url 'available_questions' %}" style="padding: 8px 16px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px;">
+                Clear
+            </a>
+        {% endif %}
+    </div>
+</form>
+
+{% if search_query or category_filter %}
+    <p style="margin-bottom: 15px; color: #666;">
+        {% if search_query %}
+            Showing results for: <strong>{{ search_query }}</strong>
+        {% endif %}
+        {% if category_filter %}
+            {% if search_query %}and {% endif %}
+            in category: <strong>{{ category_filter }}</strong>
+        {% endif %}
+        ({{ questions|length }} question{{ questions|length|pluralize }} found)
+    </p>
+{% endif %}
+
+{% if questions %}
+
+    {% for question in questions %}
+
+        <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 4px;">
+
+            <h3 style="margin-top: 0;">{{ question.title }}</h3>
+
+            <p><strong>Category:</strong> {{ question.category.name }}</p>
+
+            <p><strong>Posted:</strong> {{ question.created_at|date:"F d, Y" }}</p>
+
+            <p>{{ question.description|truncatewords:20 }}</p>
+
+            <a href="{% url 'accept_question' question.id %}" style="display: inline-block; padding: 8px 16px; background: #28a745; color: white; text-decoration: none; border-radius: 4px; margin-top: 10px;">
+              Accept Question
+            </a>
+
+        </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <div style="padding: 20px; background: #f8f9fa; border-radius: 4px; text-align: center;">
+        {% if search_query or category_filter %}
+            <p>No questions found matching your criteria.</p>
+            <p>Try different keywords or <a href="{% url 'available_questions' %}">clear your search</a>.</p>
+        {% else %}
+            <p>No questions available at the moment.</p>
+            <p>Check back later for new questions from questioners.</p>
+        {% endif %}
+    </div>
+
+{% endif %}
+
+{% endblock %}

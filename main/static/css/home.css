@@ -1,0 +1,98 @@
+/* Home Page Styles */
+.home-container {
+    min-height: calc(100vh - 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.home-content {
+    max-width: 600px;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.welcome-section {
+    background: white;
+    padding: 60px 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-section h1 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.welcome-section p {
+    font-size: 18px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .welcome-section {
+        padding: 40px 20px;
+    }
+    
+    .welcome-section h1 {
+        font-size: 28px;
+    }
+    
+    .welcome-section p {
+        font-size: 16px;
+    }
+    
+    .auth-buttons {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}

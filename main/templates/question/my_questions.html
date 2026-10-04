@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+
+{% block title %}My Questions | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<section class="my-questions">
+
+    <div class="page-header">
+        <h1>My Questions</h1>
+        <p>Track your questions and their consultation progress</p>
+    </div>
+
+    {% if questions %}
+
+        <div class="questions-grid">
+
+            {% for question in questions %}
+
+                <div class="question-card">
+                    <div class="question-header">
+                        <h3 class="question-title">
+                            <a href="{% url 'question_detail' question.id %}">
+                                {{ question.title }}
+                            </a>
+                        </h3>
+                        <span class="category-badge">{{ question.category.name }}</span>
+                    </div>
+
+                    <div class="question-body">
+                        <p class="question-description">{{ question.description|truncatewords:20 }}</p>
+                    </div>
+
+                    <div class="question-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Status:</span>
+                            <span class="status-badge status-{{ question.status }}">{{ question.get_status_display }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Created:</span>
+                            <span class="meta-value">{{ question.created_at|date:"F d, Y g:i A" }}</span>
+                        </div>
+                        {% if question.status == 'accepted' %}
+                            {% with assignment=question.assignments.first %}
+                                {% if assignment %}
+                                    <div class="meta-item">
+                                        <span class="meta-label">Advisor:</span>
+                                        <span class="meta-value">{{ assignment.advisor.user.username }}</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">Rate:</span>
+                                        <span class="meta-value">Rs. {{ assignment.advisor.consultation_rate|floatformat:2 }}</span>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        {% endif %}
+                        {% if question.payment %}
+                            <div class="meta-item">
+                                <span class="meta-label">Payment:</span>
+                                <span class="payment-badge status-{{ question.payment.status }}">
+                                    {{ question.payment.get_status_display }}
+                                </span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="question-actions">
+                        <a href="{% url 'question_detail' question.id %}" class="btn btn-primary">
+                            View Details
+                        </a>
+                        {% if question.status == 'accepted' and not question.payment %}
+                            <a href="{% url 'initiate_payment' question.id %}" class="btn btn-success">
+                                Pay to Chat
+                            </a>
+                        {% endif %}
+                        {% if question.status == 'accepted' and question.payment and question.payment.status == 'completed' %}
+                            <a href="{% url 'conversation_detail' question.id %}" class="btn btn-secondary">
+                                Open Chat
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="no-questions">
+            <div class="no-questions-icon">❓</div>
+            <h2>No Questions Yet</h2>
+            <p>You haven't asked any questions yet.</p>
+            <a href="{% url 'ask_question' %}" class="btn btn-primary">
+                Ask Your First Question
+            </a>
+        </div>
+
+    {% endif %}
+
+</section>
+
+<style>
+.my-questions {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-header {
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    color: #333;
+    margin: 0 0 10px 0;
+}
+
+.page-header p {
+    color: #666;
+    margin: 0;
+}
+
+.questions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.question-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.question-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.question-title {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+    flex: 1;
+}
+
+.question-title a {
+    color: #333;
+    text-decoration: none;
+}
+
+.question-title a:hover {
+    color: #667eea;
+}
+
+.category-badge {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.question-body {
+    margin-bottom: 15px;
+}
+
+.question-description {
+    color: #555;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.question-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.meta-label {
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.meta-value {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+}
+
+.status-badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-accepted {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-completed {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.payment-badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-completed.payment-badge {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-pending.payment-badge {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-failed.payment-badge {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.question-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.question-actions .btn {
+    flex: 1;
+    text-align: center;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #218838;
+}
+
+.no-questions {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.no-questions-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.no-questions h2 {
+    color: #333;
+    margin: 0 0 10px 0;
+}
+
+.no-questions p {
+    color: #666;
+    margin: 10px 0;
+}
+
+@media (max-width: 768px) {
+    .my-questions {
+        padding: 10px;
+    }
+    
+    .questions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .question-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .question-meta {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .question-actions {
+        flex-direction: column;
+    }
+}
+</style>
+
+{% endblock %}

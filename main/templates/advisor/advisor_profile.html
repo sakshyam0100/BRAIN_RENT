@@ -1,0 +1,553 @@
+{% extends "base.html" %}
+
+{% block title %}{{ advisor.user.get_full_name|default:advisor.user.username }} - Advisor Profile | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<div class="advisor-profile-container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="profile-info">
+            <div class="profile-avatar">
+                {% if advisor.user.profile_picture %}
+                    <img src="{{ advisor.user.profile_picture.url }}" alt="{{ advisor.user.username }}" class="avatar-img">
+                {% else %}
+                    <div class="avatar-placeholder">
+                        {{ advisor.user.username|first|upper }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="profile-details">
+                <h1>{{ advisor.user.get_full_name|default:advisor.user.username }}</h1>
+                <p class="bio">{{ advisor.bio }}</p>
+                
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Experience:</span>
+                        <span class="stat-value">{{ advisor.experience }} years</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Status:</span>
+                        <span class="stat-value approved">✓ Verified Advisor</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="rating-summary">
+            <div class="average-rating">
+                <div class="rating-number">{{ average_rating|floatformat:1 }}</div>
+                <div class="rating-stars">
+                    {% for i in "12345" %}
+                        {% if i <= average_rating %}
+                            ⭐
+                        {% else %}
+                            ☆
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="rating-label">out of 5</div>
+            </div>
+            <div class="total-reviews">{{ total_reviews }} review{{ total_reviews|pluralize }}</div>
+        </div>
+    </div>
+
+    <!-- Expertise Section -->
+    <div class="expertise-section">
+        <h2>Areas of Expertise</h2>
+        <div class="expertise-tags">
+            {% for category in advisor.expertise.all %}
+                <span class="expertise-tag">{{ category.name }}</span>
+            {% empty %}
+                <p class="no-expertise">No expertise areas listed</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Rating Breakdown -->
+    <div class="rating-breakdown">
+        <h2>Rating Breakdown</h2>
+        <div class="rating-bars">
+            <div class="rating-bar-row">
+                <span class="star-label">5 ⭐</span>
+                <div class="bar-container">
+                    <div class="bar-fill bar-fill-5" data-width="{{ rating_distribution.5.percentage }}"></div>
+                </div>
+                <span class="count-label">{{ rating_distribution.5.count }}</span>
+            </div>
+            <div class="rating-bar-row">
+                <span class="star-label">4 ⭐</span>
+                <div class="bar-container">
+                    <div class="bar-fill bar-fill-4" data-width="{{ rating_distribution.4.percentage }}"></div>
+                </div>
+                <span class="count-label">{{ rating_distribution.4.count }}</span>
+            </div>
+            <div class="rating-bar-row">
+                <span class="star-label">3 ⭐</span>
+                <div class="bar-container">
+                    <div class="bar-fill bar-fill-3" data-width="{{ rating_distribution.3.percentage }}"></div>
+                </div>
+                <span class="count-label">{{ rating_distribution.3.count }}</span>
+            </div>
+            <div class="rating-bar-row">
+                <span class="star-label">2 ⭐</span>
+                <div class="bar-container">
+                    <div class="bar-fill bar-fill-2" data-width="{{ rating_distribution.2.percentage }}"></div>
+                </div>
+                <span class="count-label">{{ rating_distribution.2.count }}</span>
+            </div>
+            <div class="rating-bar-row">
+                <span class="star-label">1 ⭐</span>
+                <div class="bar-container">
+                    <div class="bar-fill bar-fill-1" data-width="{{ rating_distribution.1.percentage }}"></div>
+                </div>
+                <span class="count-label">{{ rating_distribution.1.count }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Stats -->
+    <div class="performance-stats">
+        <h2>Performance Statistics</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-title">Completion Rate</div>
+                <div class="stat-number">{{ completion_rate|floatformat:0 }}%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-title">Average Rating</div>
+                <div class="stat-number">{{ average_rating|floatformat:1 }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💬</div>
+                <div class="stat-title">Total Reviews</div>
+                <div class="stat-number">{{ total_reviews }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Assignments -->
+    {% if recent_assignments %}
+        <div class="recent-assignments">
+            <h2>Recent Consultations</h2>
+            <div class="assignments-list">
+                {% for assignment in recent_assignments %}
+                    <div class="assignment-item">
+                        <div class="assignment-title">{{ assignment.question.title }}</div>
+                        <div class="assignment-meta">
+                            <span class="category">{{ assignment.question.category.name }}</span>
+                            <span class="date">{{ assignment.assigned_at|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Reviews Section -->
+    <div class="reviews-section">
+        <h2>Client Reviews</h2>
+        
+        {% if reviews %}
+            <div class="reviews-list">
+                {% for review in reviews %}
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <div class="reviewer-name">{{ review.questioner.username }}</div>
+                                <div class="review-date">{{ review.created_at|date:"M d, Y" }}</div>
+                            </div>
+                            <div class="review-rating">
+                                {% for i in "12345" %}
+                                    {% if i <= review.rating %}
+                                        ⭐
+                                    {% else %}
+                                        ☆
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="review-question">
+                            <strong>Question:</strong> {{ review.question.title }}
+                        </div>
+                        
+                        {% if review.comment %}
+                            <div class="review-comment">
+                                "{{ review.comment }}"
+                            </div>
+                        {% endif %}
+                        
+                        <div class="review-category">
+                            <span class="category-tag">{{ review.question.category.name }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-reviews">
+                <p>This advisor hasn't received any reviews yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.advisor-profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.profile-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.profile-info {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex: 1;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    font-size: 40px;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.profile-details h1 {
+    margin: 0 0 10px 0;
+    font-size: 28px;
+}
+
+.bio {
+    margin: 0 0 15px 0;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+
+.profile-stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.stat-label {
+    opacity: 0.8;
+}
+
+.stat-value {
+    font-weight: 600;
+}
+
+.stat-value.approved {
+    color: #4ade80;
+}
+
+.rating-summary {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    min-width: 150px;
+}
+
+.average-rating {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.rating-number {
+    font-size: 48px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.rating-stars {
+    font-size: 24px;
+    margin: 5px 0;
+}
+
+.rating-label {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.total-reviews {
+    margin-top: 10px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.expertise-section, .rating-breakdown, .performance-stats, .recent-assignments, .reviews-section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.expertise-section h2, .rating-breakdown h2, .performance-stats h2, .recent-assignments h2, .reviews-section h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #333;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 10px;
+}
+
+.expertise-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.expertise-tag {
+    background: #e7f3ff;
+    color: #0066cc;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.no-expertise {
+    color: #666;
+    font-style: italic;
+}
+
+.rating-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rating-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.star-label {
+    width: 30px;
+    font-weight: 600;
+}
+
+.bar-container {
+    flex: 1;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffc107, #ff9800);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.count-label {
+    width: 30px;
+    text-align: right;
+    color: #666;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.stat-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.stat-title {
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.stat-number {
+    font-size: 24px;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.assignments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.assignment-item {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.assignment-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.assignment-meta {
+    display: flex;
+    gap: 15px;
+    color: #666;
+    font-size: 14px;
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-card {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.reviewer-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.reviewer-name {
+    font-weight: 600;
+}
+
+.review-date {
+    color: #666;
+    font-size: 14px;
+}
+
+.review-rating {
+    font-size: 20px;
+}
+
+.review-question {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.review-comment {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 3px solid #667eea;
+    margin-bottom: 10px;
+    font-style: italic;
+    color: #555;
+}
+
+.review-category {
+    margin-top: 10px;
+}
+
+.category-tag {
+    background: #e7f3ff;
+    color: #0066cc;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.no-reviews {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .profile-info {
+        flex-direction: column;
+    }
+    
+    .profile-stats {
+        justify-content: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+// Set bar widths dynamically to avoid CSS parser issues with template variables
+document.addEventListener('DOMContentLoaded', function() {
+    const barFills = document.querySelectorAll('.bar-fill');
+    barFills.forEach(function(bar) {
+        const width = bar.getAttribute('data-width');
+        if (width) {
+            bar.style.width = width + '%';
+        }
+    });
+});
+</script>
+
+{% endblock %}

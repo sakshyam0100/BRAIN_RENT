@@ -1,0 +1,86 @@
+{% load static %}
+
+<nav class="navbar">
+    <div class="container">
+
+        <a href="{% url 'home' %}" class="logo">
+            BRAIN-RENT
+        </a>
+
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            ☰
+        </button>
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            
+            {% if user.is_authenticated %}
+                {% if user.role == "questioner" %}
+                    <li><a href="{% url 'questioner_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'ask_question' %}">Ask Question</a></li>
+                    <li><a href="{% url 'my_questions' %}">My Questions</a></li>
+                    <li><a href="{% url 'questioner_profile_view' %}">My Profile</a></li>
+                    <li><a href="{% url 'conversation_list' %}">My Chats</a></li>
+                    <li><a href="{% url 'payment_history' %}">Payment History</a></li>
+                {% elif user.role == "advisor" %}
+                    <li><a href="{% url 'advisor_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'available_questions' %}">Available Questions</a></li>
+                    <li><a href="{% url 'assigned_questions' %}">Assigned Questions</a></li>
+                    <li><a href="{% url 'edit_advisor_profile' %}">My Profile</a></li>
+                    <li><a href="{% url 'conversation_list' %}">My Chats</a></li>
+                    <li><a href="{% url 'payment_history' %}">Payment History</a></li>
+                {% endif %}
+            {% else %}
+                <li><a href="#">Categories</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            {% endif %}
+        </ul>
+
+        <div class="nav-buttons">
+            {% if user.is_authenticated %}
+                <a href="{% url 'notification_list' %}" class="notification-btn" id="notificationBtn" title="Notifications">
+                    🔔
+                    <span class="notification-badge" id="notificationBadge"></span>
+                </a>
+                <a href="{% url 'logout' %}" class="login-btn">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="login-btn">Login</a>
+                <a href="{% url 'questioner_register' %}" class="register-btn">Register</a>
+            {% endif %}
+        </div>
+
+    </div>
+</nav>
+
+{% if user.is_authenticated %}
+<script>
+// Load notification count when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/notifications/count/')
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('notificationBadge');
+            if (data.count > 0) {
+                badge.textContent = data.count;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            // Silently handle notification fetch errors
+        });
+    
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const navLinks = document.getElementById('navLinks');
+    
+    if (mobileMenuBtn && navLinks) {
+        mobileMenuBtn.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+        });
+    }
+});
+</script>
+{% endif %}

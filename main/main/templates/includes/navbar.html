@@ -1,0 +1,23 @@
+{% load static %}
+
+<nav class="navbar">
+    <div class="container">
+
+        <a href="{% url 'home' %}" class="logo">
+            BRAIN-RENT
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="#">Categories</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+
+        <div class="nav-buttons">
+            <a href="#" class="login-btn">Login</a>
+            <a href="#" class="register-btn">Register</a>
+        </div>
+
+    </div>
+</nav>

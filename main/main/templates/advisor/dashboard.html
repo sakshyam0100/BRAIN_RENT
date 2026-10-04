@@ -1,0 +1,101 @@
+    {% extends "base.html" %}
+
+    {% block title %}Advisor Dashboard | BRAIN-RENT{% endblock %}
+
+    {% block content %}
+
+    <section class="dashboard">
+
+        <h1>Welcome, {{ request.user.first_name }}!</h1>
+
+        {% if profile %}
+
+            <h3>Verification Status</h3>
+
+            <a href="{% url 'edit_advisor_profile' %}">
+        <button type="button">
+            Edit Profile
+        </button>
+    </a>
+
+    <hr>
+
+            <hr>
+
+            <h2>Advisor Rating</h2>
+
+            {% if average_rating %}
+
+                <p>
+                    ⭐ <strong>{{ average_rating|floatformat:1 }}/5</strong>
+                </p>
+
+            {% else %}
+
+                <p>
+                    No ratings yet.
+                </p>
+
+            {% endif %}
+
+            <hr>
+
+            <h2>My Reviews</h2>
+
+            {% if reviews %}
+
+                {% for review in reviews %}
+
+                    <div>
+
+                        <h4>
+                            ⭐ {{ review.rating }}/5
+                        </h4>
+
+                        <p>
+                            {{ review.comment }}
+                        </p>
+
+                        <p>
+                            <strong>Question:</strong>
+                            {{ review.question.title }}
+                        </p>
+
+                        <p>
+                            <strong>Reviewed By:</strong>
+                            {{ review.questioner.username }}
+                        </p>
+
+                        <small>
+                            {{ review.created_at }}
+                        </small>
+
+                    </div>
+
+                    <hr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p>
+                    You haven't received any reviews yet.
+                </p>
+
+            {% endif %}
+
+        {% else %}
+
+            <p>
+                You have not completed your advisor profile yet.
+            </p>
+
+            <a href="{% url 'advisor_verification' %}">
+                Complete Verification
+            </a>
+
+        {% endif %}
+
+    </section>
+
+    {% endblock %}

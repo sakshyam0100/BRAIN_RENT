@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}My Questions | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<section class="my-questions">
+
+    <h1>My Questions</h1>
+
+    {% if questions %}
+
+        {% for question in questions %}
+
+            <div class="question-card">
+
+                <h3>
+                  <a href="{% url 'question_detail' question.id %}">
+                        {{ question.title }}
+                         </a>
+                </h3>
+
+                <p>{{ question.category.name }}</p>
+
+                <p>Status: {{ question.get_status_display }}</p>
+
+                <small>{{ question.created_at }}</small>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>You haven't asked any questions yet.</p>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

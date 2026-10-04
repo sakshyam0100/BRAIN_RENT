@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Inbox | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<h1>Inbox</h1>
+
+{% if conversations %}
+
+    {% for conversation in conversations %}
+
+        <div>
+
+            <h3>
+
+                {{ conversation.question.title }}
+
+                {% if conversation.unread_count > 0 %}
+
+                    <span
+                        style="
+                            background: red;
+                            color: white;
+                            padding: 2px 8px;
+                            border-radius: 10px;
+                            font-size: 12px;
+                            margin-left: 10px;
+                        "
+                    >
+                        {{ conversation.unread_count }}
+                    </span>
+
+                {% endif %}
+
+            </h3>
+
+            <p>
+                <strong>Category:</strong>
+                {{ conversation.question.category.name }}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                {{ conversation.question.get_status_display }}
+            </p>
+
+            <a href="{% url 'conversation_detail' conversation.question.id %}">
+                Open Chat
+            </a>
+
+        </div>
+
+        <hr>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>No conversations yet.</p>
+
+{% endif %}
+
+{% endblock %}

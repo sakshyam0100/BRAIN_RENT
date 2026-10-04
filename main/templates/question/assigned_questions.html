@@ -1,0 +1,396 @@
+{% extends "base.html" %}
+
+{% block title %}Assigned Questions | BRAIN-RENT{% endblock %}
+
+{% block content %}
+
+<section class="assigned-questions">
+
+    <div class="page-header">
+        <h1>Assigned Questions</h1>
+        <p>Questions you've accepted and are working on</p>
+    </div>
+
+    {% if assignments %}
+
+        <div class="assignments-grid">
+
+            {% for assignment in assignments %}
+
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <h3 class="assignment-title">
+                            <a href="{% url 'advisor_question_detail' assignment.question.id %}">
+                                {{ assignment.question.title }}
+                            </a>
+                        </h3>
+                        <span class="category-badge">{{ assignment.question.category.name }}</span>
+                    </div>
+
+                    <div class="questioner-info">
+                        <div class="questioner-avatar">
+                            {% if assignment.question.questioner.profile_picture %}
+                                <img src="{{ assignment.question.questioner.profile_picture.url }}" alt="{{ assignment.question.questioner.username }}">
+                            {% else %}
+                                <div class="avatar-placeholder">{{ assignment.question.questioner.username|first|upper }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="questioner-details">
+                            <div class="questioner-name">{{ assignment.question.questioner.username }}</div>
+                            <div class="assignment-date">Assigned {{ assignment.assigned_at|date:"F d, Y" }}</div>
+                        </div>
+                    </div>
+
+                    <div class="assignment-body">
+                        <p class="assignment-description">{{ assignment.question.description|truncatewords:20 }}</p>
+                    </div>
+
+                    <div class="assignment-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Question Status:</span>
+                            <span class="status-badge status-{{ assignment.question.status }}">{{ assignment.question.get_status_display }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Your Rate:</span>
+                            <span class="meta-value">Rs. {{ assignment.advisor.consultation_rate|floatformat:2 }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Assignment Status:</span>
+                            <span class="status-badge status-{{ assignment.status }}">{{ assignment.get_status_display }}</span>
+                        </div>
+                        {% if assignment.question.payment %}
+                            <div class="meta-item">
+                                <span class="meta-label">Payment:</span>
+                                <span class="payment-badge status-{{ assignment.question.payment.status }}">
+                                    {{ assignment.question.payment.get_status_display }}
+                                </span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="assignment-actions">
+                        <a href="{% url 'advisor_question_detail' assignment.question.id %}" class="btn btn-primary">
+                            View Details
+                        </a>
+                        {% if assignment.question.payment and assignment.question.payment.status == 'completed' %}
+                            <a href="{% url 'conversation_detail' assignment.question.id %}" class="btn btn-success">
+                                Open Chat
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="no-assignments">
+            <div class="no-assignments-icon">📋</div>
+            <h2>No Assigned Questions</h2>
+            <p>You haven't accepted any questions yet.</p>
+            <a href="{% url 'available_questions' %}" class="btn btn-primary">
+                Browse Available Questions
+            </a>
+        </div>
+
+    {% endif %}
+
+</section>
+
+<style>
+.assigned-questions {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-header {
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    color: #333;
+    margin: 0 0 10px 0;
+}
+
+.page-header p {
+    color: #666;
+    margin: 0;
+}
+
+.assignments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.assignment-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.assignment-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.assignment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.assignment-title {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+    flex: 1;
+}
+
+.assignment-title a {
+    color: #333;
+    text-decoration: none;
+}
+
+.assignment-title a:hover {
+    color: #667eea;
+}
+
+.category-badge {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.questioner-info {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.questioner-avatar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #667eea;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.questioner-details {
+    flex: 1;
+}
+
+.questioner-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.assignment-date {
+    font-size: 12px;
+    color: #666;
+}
+
+.assignment-body {
+    margin-bottom: 15px;
+}
+
+.assignment-description {
+    color: #555;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.assignment-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.meta-label {
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.meta-value {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+}
+
+.status-badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-accepted {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-completed {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.payment-badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-completed.payment-badge {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-pending.payment-badge {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-failed.payment-badge {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.assignment-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.assignment-actions .btn {
+    flex: 1;
+    text-align: center;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #218838;
+}
+
+.no-assignments {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.no-assignments-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.no-assignments h2 {
+    color: #333;
+    margin: 0 0 10px 0;
+}
+
+.no-assignments p {
+    color: #666;
+    margin: 10px 0;
+}
+
+@media (max-width: 768px) {
+    .assigned-questions {
+        padding: 10px;
+    }
+    
+    .assignments-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .assignment-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .assignment-meta {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .assignment-actions {
+        flex-direction: column;
+    }
+}
+</style>
+
+{% endblock %}
